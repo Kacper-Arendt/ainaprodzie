@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: db-202610082030-organization
+      author: retrofit
+      context: schema
+      comment: Customer organization with its first-response SLA in minutes.
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE organization (
+                  id uuid PRIMARY KEY,
+                  name text NOT NULL,
+                  first_response_sla_minutes integer NOT NULL
+                      CONSTRAINT organization_sla_positive_check CHECK (first_response_sla_minutes > 0),
+                  created_at timestamptz NOT NULL,
+                  updated_at timestamptz NOT NULL
+              );
+
+              CREATE UNIQUE INDEX organization_name_ux ON organization (name);
+      rollback:
+        - sql:
+            sql: DROP TABLE organization;

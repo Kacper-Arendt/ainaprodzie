@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: db-202610091825-idempotency-key
+      author: retrofit
+      context: schema
+      comment: >-
+        Idempotency-Key claims, scoped per user. A request claims its key before writing and fills the outcome
+        (ticket, comment, status) in the same transaction, so a retry replays it and a parallel duplicate waits.
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE idempotency_key (
+                  user_id uuid NOT NULL CONSTRAINT idempotency_key_user_fk REFERENCES app_user (id),
+                  key text NOT NULL,
+                  request_hash text NOT NULL,
+                  ticket_id uuid NULL CONSTRAINT idempotency_key_ticket_fk REFERENCES ticket (id),
+                  comment_id uuid NULL CONSTRAINT idempotency_key_comment_fk REFERENCES ticket_comment (id),
+                  response_status smallint NULL,
+                  created_at timestamptz NOT NULL,
+                  CONSTRAINT idempotency_key_pkey PRIMARY KEY (user_id, key)
+              );
+
+              CREATE INDEX idempotency_key_ticket_ix ON idempotency_key (ticket_id);
+              CREATE INDEX idempotency_key_comment_ix ON idempotency_key (comment_id);
+      rollback:
+        - sql:
+            sql: DROP TABLE idempotency_key;

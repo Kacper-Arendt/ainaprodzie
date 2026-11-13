@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: db-202610082037-dev-seed-demo-data
+      author: retrofit
+      context: dev
+      comment: >-
+        Demo organizations, teams, accounts (password "password") and tickets for local development and the
+        training. Timestamps are relative to now(); recreate the database to refresh them.
+      changes:
+        - sqlFile:
+            path: ../../seed/demo-data.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
+      rollback:
+        - sqlFile:
+            path: ../../seed/demo-data-rollback.sql
+            relativeToChangelogFile: true

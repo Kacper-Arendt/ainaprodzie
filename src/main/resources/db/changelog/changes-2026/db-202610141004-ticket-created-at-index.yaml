@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: db-202610141004-ticket-created-at-index
+      author: retrofit
+      context: schema
+      runInTransaction: false
+      comment: >-
+        The ticket list filters by creation time (createdFrom, createdTo). Built concurrently, which cannot run
+        inside a transaction, so the ticket table stays writable while the index builds.
+      changes:
+        - sql:
+            sql: CREATE INDEX CONCURRENTLY ticket_created_at_ix ON ticket (created_at);
+      rollback:
+        - sql:
+            sql: DROP INDEX CONCURRENTLY ticket_created_at_ix;

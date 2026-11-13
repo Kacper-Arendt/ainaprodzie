@@ -1,0 +1,7 @@
+# Master changelog. Every schema change is a separate file under
+# db/changelog/changes-<year>/ named db-YYYYMMDDHHmm-name.yaml (UTC clock at
+# creation: date -u +%Y%m%d%H%M), picked up automatically in filename order;
+# never edit a changeset already applied to a deployed database.
+databaseChangeLog:
+  - includeAll:
+      path: db/changelog/changes-2026/

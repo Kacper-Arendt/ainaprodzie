@@ -1,0 +1,18 @@
+pre-commit:
+  jobs:
+    - name: format
+      root: frontend/
+      run: pnpm exec oxfmt --no-error-on-unmatched-pattern {staged_files}
+      stage_fixed: true
+    - name: lint
+      root: frontend/
+      glob: "*.{js,jsx,ts,tsx}"
+      run: pnpm exec oxlint {staged_files}
+
+post-checkout:
+  jobs:
+    # maven-resources-plugin never deletes a resource the new branch lacks, such as a later lesson's Liquibase
+    # changeset, so the next test run would still apply it. Only a branch switch ({3} = 1) to another commit drops the
+    # compiled classes; a file checkout leaves them.
+    - name: drop stale classes
+      run: '[ "{3}" != 1 ] || [ "{1}" = "{2}" ] || rm -rf target/classes target/test-classes'

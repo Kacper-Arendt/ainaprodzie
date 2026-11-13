@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: db-202610091824-ticket-audit-entry-created
+      author: retrofit
+      context: schema
+      comment: >-
+        A ticket's creation is audited as a CREATED entry: no old value, the title as the new value.
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE ticket_audit_entry DROP CONSTRAINT ticket_audit_entry_field_check;
+
+              ALTER TABLE ticket_audit_entry
+                  ADD CONSTRAINT ticket_audit_entry_field_check CHECK (field IN
+                      ('CREATED','TITLE','DESCRIPTION','CATEGORY','PRIORITY','STATUS','TEAM','ASSIGNEE','RESOLUTION',
+                       'LINK'));
+      rollback:
+        - sql:
+            sql: |
+              DELETE FROM ticket_audit_entry WHERE field = 'CREATED';
+
+              ALTER TABLE ticket_audit_entry DROP CONSTRAINT ticket_audit_entry_field_check;
+
+              ALTER TABLE ticket_audit_entry
+                  ADD CONSTRAINT ticket_audit_entry_field_check CHECK (field IN
+                      ('TITLE','DESCRIPTION','CATEGORY','PRIORITY','STATUS','TEAM','ASSIGNEE','RESOLUTION','LINK'));

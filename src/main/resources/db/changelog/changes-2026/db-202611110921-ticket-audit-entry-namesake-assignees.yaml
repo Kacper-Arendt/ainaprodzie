@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: db-202611110921-ticket-audit-entry-namesake-assignees
+      author: retrofit
+      context: schema
+      comment: >-
+        An assignee change is recorded by display name, and display names are not unique: a change between two
+        namesakes holds one name twice. Every other field still requires the old and the new value to differ.
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE ticket_audit_entry DROP CONSTRAINT ticket_audit_entry_changed_check;
+
+              ALTER TABLE ticket_audit_entry
+                  ADD CONSTRAINT ticket_audit_entry_changed_check
+                      CHECK (field = 'ASSIGNEE' OR old_value IS DISTINCT FROM new_value);
+      rollback:
+        - sql:
+            sql: |
+              ALTER TABLE ticket_audit_entry DROP CONSTRAINT ticket_audit_entry_changed_check;
+
+              ALTER TABLE ticket_audit_entry
+                  ADD CONSTRAINT ticket_audit_entry_changed_check CHECK (old_value IS DISTINCT FROM new_value);

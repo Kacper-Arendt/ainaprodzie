@@ -1,0 +1,447 @@
+{
+  "app": {
+    "name": "Retrofit",
+    "documentTitle": "{{page}} – Retrofit"
+  },
+  "loading": "Ładowanie…",
+  "language": {
+    "label": "Język"
+  },
+  "login": {
+    "pageTitle": "Logowanie",
+    "subtitle": "Zaloguj się na swoje konto",
+    "email": "E-mail",
+    "password": "Hasło",
+    "submit": "Zaloguj się",
+    "invalidCredentials": "Nieprawidłowy e-mail lub hasło.",
+    "sessionEnded": "Twoja sesja wygasła. Zaloguj się ponownie, aby kontynuować od miejsca, w którym przerwano pracę."
+  },
+  "errors": {
+    "generic": "Coś poszło nie tak. Spróbuj ponownie.",
+    "network": "Nie można połączyć się z Retrofit. Sprawdź połączenie i spróbuj ponownie.",
+    "retry": "Spróbuj ponownie",
+    "field": {
+      "required": "To pole jest wymagane.",
+      "too-long": "Ten tekst jest za długi.",
+      "invalid": "Ten tekst zawiera niedozwolony znak."
+    }
+  },
+  "offline": {
+    "title": "Jesteś offline.",
+    "body": "Retrofit pokazuje ostatnio wczytane dane, a to, co wyślesz, zostanie wysłane po przywróceniu połączenia."
+  },
+  "shell": {
+    "logout": "Wyloguj się",
+    "skipToContent": "Przejdź do treści strony",
+    "organization": "Organizacja: {{name}}",
+    "team": "Zespół: {{name}}",
+    "roles": {
+      "USER": "Użytkownik",
+      "SUPPORT": "Wsparcie"
+    },
+    "service": "{{service}} · API {{version}}"
+  },
+  "home": {
+    "introSupport": "Zgłoszenia wszystkich organizacji.",
+    "introCustomer": "Zgłoszenia Twojej organizacji."
+  },
+  "routeError": {
+    "notFoundTitle": "Nie znaleziono strony",
+    "notFoundBody": "Strona, której szukasz, nie istnieje.",
+    "backHome": "Wróć do strony głównej",
+    "title": "Coś poszło nie tak",
+    "body": "Odśwież stronę, aby spróbować ponownie.",
+    "reload": "Odśwież"
+  },
+  "dialog": {
+    "close": "Zamknij okno"
+  },
+  "tickets": {
+    "title": "Zgłoszenia",
+    "search": {
+      "label": "Szukaj po numerze, tytule lub opisie",
+      "placeholder": "RET-1042 lub słowa",
+      "submit": "Szukaj"
+    },
+    "views": {
+      "label": "Widok",
+      "count_one": "{{count}} zgłoszenie",
+      "count_few": "{{count}} zgłoszenia",
+      "count_many": "{{count}} zgłoszeń",
+      "count_other": "{{count}} zgłoszenia",
+      "all": "Wszystkie",
+      "assignedToMe": "Przypisane do mnie",
+      "myTeam": "Mój zespół",
+      "raisedByMe": "Moje zgłoszenia",
+      "needsMyAnswer": "Czekające na mnie"
+    },
+    "sort": {
+      "label": "Kolejność",
+      "RESPONSE_DEADLINE": "Termin odpowiedzi",
+      "RECENTLY_UPDATED": "Ostatnio zmienione",
+      "LONGEST_WAITING": "Najdłużej oczekujące"
+    },
+    "filters": {
+      "status": "Status",
+      "anyStatus": "Dowolny status",
+      "category": "Kategoria",
+      "anyCategory": "Dowolna kategoria",
+      "priority": "Priorytet",
+      "anyPriority": "Dowolny priorytet",
+      "organization": "Organizacja",
+      "anyOrganization": "Dowolna organizacja",
+      "team": "Zespół",
+      "anyTeam": "Dowolny zespół",
+      "myTeam": "Mój zespół",
+      "assignee": "Osoba przypisana",
+      "anyAssignee": "Dowolna osoba",
+      "me": "Ja",
+      "unknown": "Nieznana wartość",
+      "sla": "SLA",
+      "anySla": "Dowolne",
+      "breached": "Przekroczone",
+      "withinSla": "W terminie",
+      "attention": "Wymaga uwagi",
+      "anyAttention": "Dowolne",
+      "attentionValue": {
+        "PAST_DEADLINE": "SLA bez odpowiedzi",
+        "DUE_WITHIN_HOUR": "Termin w ciągu 1 h",
+        "UNANSWERED_CUSTOMER_COMMENT": "Klient napisał",
+        "UNASSIGNED": "Bez przypisania"
+      },
+      "toggle": "Filtry",
+      "toggleCount": "Filtry ({{count}})",
+      "clear": "Wyczyść filtry",
+      "active": {
+        "label": "Aktywne filtry",
+        "chip": "{{name}}: {{value}}",
+        "remove": "Usuń filtr {{filter}}",
+        "clearAll": "Wyczyść wszystkie"
+      }
+    },
+    "columns": {
+      "reference": "Zgłoszenie",
+      "title": "Tytuł",
+      "organization": "Organizacja",
+      "assignee": "Przypisanie",
+      "status": "Status",
+      "priority": "Priorytet",
+      "response": "Odpowiedź"
+    },
+    "emptyTitle": "Brak zgłoszeń",
+    "empty": {
+      "search": "Żadne zgłoszenie nie pasuje do „{{text}}”.",
+      "searchAndFilters_one": "Żadne zgłoszenie nie pasuje do „{{text}}” przy filtrze {{filters}}.",
+      "searchAndFilters_few": "Żadne zgłoszenie nie pasuje do „{{text}}” przy filtrach {{filters}}.",
+      "searchAndFilters_many": "Żadne zgłoszenie nie pasuje do „{{text}}” przy filtrach {{filters}}.",
+      "searchAndFilters_other": "Żadne zgłoszenie nie pasuje do „{{text}}” przy filtrach {{filters}}.",
+      "filters_one": "Żadne zgłoszenie nie pasuje do filtra {{filters}}.",
+      "filters_few": "Żadne zgłoszenie nie pasuje do filtrów {{filters}}.",
+      "filters_many": "Żadne zgłoszenie nie pasuje do filtrów {{filters}}.",
+      "filters_other": "Żadne zgłoszenie nie pasuje do filtrów {{filters}}.",
+      "none": "Nie ma jeszcze żadnych zgłoszeń.",
+      "noneCustomer": "Twoja organizacja nie ma jeszcze zgłoszeń.",
+      "clearSearch": "Wyczyść wyszukiwanie"
+    },
+    "range": "{{from}}–{{to}} z {{total}}",
+    "previous": "Poprzednie",
+    "next": "Następne",
+    "slaBreached": "SLA przekroczone",
+    "desk": {
+      "label": "We wszystkich zgłoszeniach:",
+      "pastDeadline_one": "przekroczenie SLA wciąż bez odpowiedzi",
+      "pastDeadline_few": "przekroczenia SLA wciąż bez odpowiedzi",
+      "pastDeadline_many": "przekroczeń SLA wciąż bez odpowiedzi",
+      "pastDeadline_other": "przekroczenia SLA wciąż bez odpowiedzi",
+      "dueWithinHour": "z terminem w ciągu godziny",
+      "unansweredCustomerComment": "z komentarzem klienta bez odpowiedzi",
+      "unassigned_one": "otwarte bez przypisania",
+      "unassigned_few": "otwarte bez przypisania",
+      "unassigned_many": "otwartych bez przypisania",
+      "unassigned_other": "otwartego bez przypisania"
+    },
+    "customerComment": {
+      "ago": "Klient napisał {{duration}} temu",
+      "justNow": "Klient napisał przed chwilą"
+    },
+    "criticalMarker": "Priorytet krytyczny",
+    "needsYourAnswer": "Czeka na Ciebie",
+    "unassigned": "Nieprzypisane",
+    "titleRequired": "Podaj tytuł zgłoszenia.",
+    "none": "Brak",
+    "status": {
+      "NEW": "Nowe",
+      "IN_PROGRESS": "W toku",
+      "WAITING_FOR_CUSTOMER": "Czeka na klienta",
+      "RESOLVED": "Rozwiązane",
+      "CLOSED": "Zamknięte"
+    },
+    "priority": {
+      "LOW": "Niski",
+      "NORMAL": "Normalny",
+      "HIGH": "Wysoki",
+      "CRITICAL": "Krytyczny"
+    },
+    "category": {
+      "BUG": "Błąd",
+      "QUESTION": "Pytanie",
+      "FEATURE_REQUEST": "Propozycja funkcji"
+    },
+    "duration": {
+      "days": "{{count}} d",
+      "hours": "{{count}} h",
+      "minutes": "{{count}} min"
+    },
+    "clock": {
+      "short": {
+        "due": "Termin za {{duration}}",
+        "dueNow": "Termin mija teraz",
+        "over": "{{duration}} po terminie",
+        "answered": "Odpowiedź po {{duration}}",
+        "answeredLate": "Odpowiedź {{duration}} po terminie",
+        "closedUnanswered": "Bez odpowiedzi",
+        "closedLate": "Bez odpowiedzi, po terminie"
+      },
+      "long": {
+        "due": "Termin pierwszej odpowiedzi za {{duration}}",
+        "dueNow": "Termin pierwszej odpowiedzi mija teraz",
+        "over": "Termin pierwszej odpowiedzi minął {{duration}} temu",
+        "answered": "Pierwsza odpowiedź po {{duration}}",
+        "answeredLate": "Pierwsza odpowiedź udzielona {{duration}} po terminie",
+        "closedUnanswered": "Zamknięte bez pierwszej odpowiedzi",
+        "closedLate": "Zamknięte bez pierwszej odpowiedzi, po terminie"
+      }
+    },
+    "customerClock": {
+      "waiting": {
+        "days_one": "Czeka na zespół wsparcia od {{count}} dnia",
+        "days_few": "Czeka na zespół wsparcia od {{count}} dni",
+        "days_many": "Czeka na zespół wsparcia od {{count}} dni",
+        "days_other": "Czeka na zespół wsparcia od {{count}} dnia",
+        "hours_one": "Czeka na zespół wsparcia od {{count}} godziny",
+        "hours_few": "Czeka na zespół wsparcia od {{count}} godzin",
+        "hours_many": "Czeka na zespół wsparcia od {{count}} godzin",
+        "hours_other": "Czeka na zespół wsparcia od {{count}} godziny",
+        "minutes_one": "Czeka na zespół wsparcia od {{count}} minuty",
+        "minutes_few": "Czeka na zespół wsparcia od {{count}} minut",
+        "minutes_many": "Czeka na zespół wsparcia od {{count}} minut",
+        "minutes_other": "Czeka na zespół wsparcia od {{count}} minuty",
+        "underMinute": "Czeka na zespół wsparcia od niecałej minuty"
+      },
+      "answered": {
+        "days_one": "Odpowiedź po {{count}} dniu",
+        "days_few": "Odpowiedź po {{count}} dniach",
+        "days_many": "Odpowiedź po {{count}} dniach",
+        "days_other": "Odpowiedź po {{count}} dnia",
+        "hours_one": "Odpowiedź po {{count}} godzinie",
+        "hours_few": "Odpowiedź po {{count}} godzinach",
+        "hours_many": "Odpowiedź po {{count}} godzinach",
+        "hours_other": "Odpowiedź po {{count}} godziny",
+        "minutes_one": "Odpowiedź po {{count}} minucie",
+        "minutes_few": "Odpowiedź po {{count}} minutach",
+        "minutes_many": "Odpowiedź po {{count}} minutach",
+        "minutes_other": "Odpowiedź po {{count}} minuty",
+        "underMinute": "Odpowiedź w niecałą minutę"
+      },
+      "closedUnanswered": "Zamknięte przed odpowiedzią",
+      "resolvedUnanswered": "Rozwiązane przed odpowiedzią",
+      "pastAim": {
+        "hours_one": "{{wait}}, dłużej niż zakładana {{count}} godzina",
+        "hours_few": "{{wait}}, dłużej niż zakładane {{count}} godziny",
+        "hours_many": "{{wait}}, dłużej niż zakładane {{count}} godzin",
+        "hours_other": "{{wait}}, dłużej niż zakładane {{count}} godziny",
+        "minutes_one": "{{wait}}, dłużej niż zakładana {{count}} minuta",
+        "minutes_few": "{{wait}}, dłużej niż zakładane {{count}} minuty",
+        "minutes_many": "{{wait}}, dłużej niż zakładane {{count}} minut",
+        "minutes_other": "{{wait}}, dłużej niż zakładane {{count}} minuty"
+      }
+    },
+    "statusLine": {
+      "awaitsYou": "Zespół wsparcia czeka na Twoją odpowiedź",
+      "reply": "Odpowiedz",
+      "priority": "Priorytet: {{priority}}",
+      "assignee": "Przypisane: {{name}}"
+    },
+    "details": {
+      "back": "Wszystkie zgłoszenia",
+      "notFoundTitle": "Nie znaleziono zgłoszenia",
+      "notFoundBody": "Nie ma zgłoszenia {{reference}}, które możesz zobaczyć.",
+      "facts": "Szczegóły",
+      "organization": "Organizacja",
+      "author": "Autor",
+      "category": "Kategoria",
+      "team": "Zespół",
+      "assignee": "Osoba przypisana",
+      "createdAt": "Utworzone",
+      "firstResponseAt": "Pierwsza odpowiedź",
+      "responseDeadline": "Termin odpowiedzi",
+      "waitingTime": "Czas oczekiwania",
+      "closedAt": "Zamknięte",
+      "description": "Opis",
+      "resolution": "Rozwiązanie",
+      "conversation": "Rozmowa",
+      "noComments": "Brak komentarzy.",
+      "internalNote": "Notatka wewnętrzna",
+      "support": "Zespół wsparcia",
+      "links": "Powiązane zgłoszenia",
+      "history": "Historia",
+      "noHistory": "Brak zmian.",
+      "changeFrom": "{{field}}: {{from}}",
+      "changeTo": "na",
+      "set": "{{field}}: ustawiono {{to}}",
+      "cleared": "{{field}}: usunięto {{from}}",
+      "linked": {
+        "RELATED": "Dodano powiązane zgłoszenie {{reference}}",
+        "POTENTIAL_DUPLICATE_OF": "Oznaczono jako potencjalny duplikat {{reference}}",
+        "HAS_POTENTIAL_DUPLICATE": "Oznaczono {{reference}} jako potencjalny duplikat tego zgłoszenia"
+      },
+      "unlinked": "Usunięto powiązanie z {{reference}}",
+      "edited": "{{field}}: zmieniono",
+      "showChange": "Pokaż zmianę",
+      "before": "Przed",
+      "after": "Po",
+      "empty": "—",
+      "quoted": "„{{text}}”",
+      "closedNotice": "To zgłoszenie jest zamknięte. Aby kontynuować, <newTicket>utwórz nowe zgłoszenie</newTicket>.",
+      "created": "Utworzono zgłoszenie"
+    },
+    "relation": {
+      "RELATED": "Powiązane",
+      "POTENTIAL_DUPLICATE_OF": "Może duplikować",
+      "HAS_POTENTIAL_DUPLICATE": "Może być duplikowane przez"
+    },
+    "field": {
+      "CREATED": "Utworzenie",
+      "TITLE": "Tytuł",
+      "DESCRIPTION": "Opis",
+      "CATEGORY": "Kategoria",
+      "PRIORITY": "Priorytet",
+      "STATUS": "Status",
+      "TEAM": "Zespół",
+      "ASSIGNEE": "Osoba przypisana",
+      "RESOLUTION": "Rozwiązanie",
+      "LINK": "Powiązanie"
+    },
+    "optional": "(opcjonalnie)",
+    "new": {
+      "heading": "Nowe zgłoszenie",
+      "intro": "Opisz problem lub pytanie. Priorytet i przypisanie ustali zespół wsparcia.",
+      "title": "Tytuł",
+      "description": "Opis",
+      "descriptionHint": "Napisz, co zostało zrobione, czego oczekiwano, co stało się zamiast tego i w którym projekcie.",
+      "category": "Kategoria",
+      "categoryUnsure": "Nie wiem",
+      "cancel": "Anuluj",
+      "submit": "Utwórz zgłoszenie",
+      "expectationHours_one": "Zespół wsparcia odpowiada {{organization}} po raz pierwszy w ciągu {{count}} godziny.",
+      "expectationHours_few": "Zespół wsparcia odpowiada {{organization}} po raz pierwszy w ciągu {{count}} godzin.",
+      "expectationHours_many": "Zespół wsparcia odpowiada {{organization}} po raz pierwszy w ciągu {{count}} godzin.",
+      "expectationHours_other": "Zespół wsparcia odpowiada {{organization}} po raz pierwszy w ciągu {{count}} godziny.",
+      "expectationMinutes_one": "Zespół wsparcia odpowiada {{organization}} po raz pierwszy w ciągu {{count}} minuty.",
+      "expectationMinutes_few": "Zespół wsparcia odpowiada {{organization}} po raz pierwszy w ciągu {{count}} minut.",
+      "expectationMinutes_many": "Zespół wsparcia odpowiada {{organization}} po raz pierwszy w ciągu {{count}} minut.",
+      "expectationMinutes_other": "Zespół wsparcia odpowiada {{organization}} po raz pierwszy w ciągu {{count}} minuty."
+    },
+    "composer": {
+      "mode": "Widoczność komentarza",
+      "publicComment": "Komentarz publiczny",
+      "internalNote": "Notatka wewnętrzna",
+      "label": "Komentarz publiczny, widoczny dla zespołu wsparcia i Twoich współpracowników z {{organization}}",
+      "placeholder": "Napisz komentarz",
+      "publicLabel": "Komentarz publiczny, widoczny dla {{organization}}",
+      "publicPlaceholder": "Napisz komentarz publiczny",
+      "noteLabel": "Notatka wewnętrzna, widoczna tylko dla zespołu wsparcia",
+      "notePlaceholder": "Napisz notatkę wewnętrzną",
+      "send": "Wyślij do zespołu wsparcia i {{organization}}",
+      "sendTo": "Wyślij do {{organization}}",
+      "addNote": "Dodaj notatkę wewnętrzną",
+      "shortcut": "{{keys}} wysyła"
+    },
+    "close": {
+      "action": "Zamknij zgłoszenie",
+      "title": "Zamknąć {{reference}}?",
+      "body": "Zamknięcia nie można cofnąć. Potem komentarze do zgłoszenia może dodawać już tylko zespół wsparcia.",
+      "awaitsAnswer": "Zespół wsparcia zadał Ci pytanie w tym zgłoszeniu. Zamknąć je mimo to?",
+      "resolution": "Rozwiązanie",
+      "howSolved": "Jak problem został rozwiązany?",
+      "answerInstead": "Odpowiedz zamiast tego",
+      "cancel": "Anuluj",
+      "submit": "Zamknij zgłoszenie"
+    },
+    "assign": {
+      "action": "Przypisz do mnie"
+    },
+    "editor": {
+      "discard": "Odrzuć",
+      "save": "Zapisz zmiany",
+      "unsaved": "Niezapisane zmiany",
+      "saved": "Zmiany zapisane",
+      "updated": "Zaktualizowano {{time}}",
+      "resolution": "Rozwiązanie",
+      "changed": "Zmieniono",
+      "statusNotAllowed": "Tego zgłoszenia nie można przenieść do tego statusu z obecnego.",
+      "resolutionNotResolved": "Rozwiązanie podaje się tylko dla rozwiązanego zgłoszenia.",
+      "closeHint": "Aby je zamknąć, użyj przycisku Zamknij zgłoszenie u góry strony.",
+      "noFirstResponse": "To zgłoszenie nie ma jeszcze pierwszej odpowiedzi. Zanim je rozwiążesz, wyślij klientowi komentarz publiczny."
+    },
+    "leave": {
+      "title": "Wyjść bez zapisywania?",
+      "body": "Zmiany w {{reference}} nie są zapisane: {{fields}}. Wyjście teraz je odrzuci.",
+      "keep": "Wróć do edycji",
+      "discard": "Odrzuć i wyjdź",
+      "newTitle": "Wyjść bez tworzenia zgłoszenia?",
+      "newBody": "Zgłoszenie nie zostało jeszcze utworzone. Wyjście teraz odrzuci wprowadzone dane: {{fields}}."
+    },
+    "content": {
+      "edit": "Edytuj",
+      "editLabel": "Edytuj tytuł i opis",
+      "heading": "Tytuł i opis",
+      "cancel": "Anuluj",
+      "noDescription": "Brak opisu.",
+      "authorHint": "Możesz to edytować, dopóki zespół wsparcia nie zacznie pracy nad zgłoszeniem. Potem dodaj komentarz."
+    },
+    "conflict": {
+      "message": "Ktoś zmienił to zgłoszenie w międzyczasie. Twoje zmiany nie zostały zapisane.",
+      "reload": "Wczytaj zgłoszenie ponownie"
+    },
+    "problems": {
+      "closed": "To zgłoszenie jest zamknięte i nie można go już zmienić.",
+      "alreadyClosed": "To zgłoszenie zostało już zamknięte.",
+      "keyReused": "To żądanie nie zgadza się z wysłanym wcześniej. Wyślij je ponownie.",
+      "forbidden": "Nie masz uprawnień do tej operacji.",
+      "notEditable": "Zespół wsparcia już pracuje nad tym zgłoszeniem, więc nie można go edytować. Dodaj komentarz.",
+      "notResolved": "Przed zamknięciem rozwiąż zgłoszenie, podając rozwiązanie."
+    },
+    "links": {
+      "empty": "Brak powiązanych zgłoszeń.",
+      "remove": "Usuń",
+      "removeLabel": "Usuń powiązanie z {{reference}}",
+      "form": "Powiąż zgłoszenie",
+      "ticket": "Zgłoszenie",
+      "noResults": "Żadne zgłoszenie nie pasuje do „{{text}}”",
+      "type": "Powiąż jako",
+      "types": {
+        "RELATED": "Powiązane zgłoszenie",
+        "POTENTIAL_DUPLICATE": "Potencjalny duplikat"
+      },
+      "submit": "Powiąż",
+      "cancel": "Anuluj",
+      "removed": "Usunięto powiązanie z {{reference}}.",
+      "undo": "Cofnij",
+      "undoLabel": "Cofnij usunięcie powiązania z {{reference}}",
+      "self": "Zgłoszenia nie można powiązać z nim samym.",
+      "pickTicket": "Wybierz zgłoszenie z listy.",
+      "searching": "Szukanie…"
+    },
+    "announce": {
+      "commentSent": "Komentarz wysłany.",
+      "noteAdded": "Notatka wewnętrzna dodana.",
+      "contentSaved": "Tytuł i opis zapisane.",
+      "factsSaved": "Szczegóły zapisane.",
+      "assigned": "Przypisano do Ciebie.",
+      "linked": "Powiązano {{reference}}.",
+      "unlinked": "Usunięto powiązanie z {{reference}}.",
+      "closed": "Zgłoszenie zamknięte."
+    }
+  }
+}

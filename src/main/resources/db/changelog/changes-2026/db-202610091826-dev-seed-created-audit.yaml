@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: db-202610091826-dev-seed-created-audit
+      author: retrofit
+      context: dev
+      comment: >-
+        A CREATED audit entry for every demo ticket, by its author at its creation time, as a live create writes it.
+      changes:
+        - sqlFile:
+            path: ../../seed/demo-data-created-audit.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
+      rollback:
+        - sql:
+            sql: |
+              DELETE FROM ticket_audit_entry
+              WHERE field = 'CREATED'
+                AND ticket_id IN (SELECT id FROM ticket WHERE organization_id IN ('00000000-0000-0000-0000-0000000b0001',
+                    '00000000-0000-0000-0000-0000000b0002', '00000000-0000-0000-0000-0000000b0003'));

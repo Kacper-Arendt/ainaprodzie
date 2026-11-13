@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+# Resets the demo data of the dev database to the state the dev seed created, in one transaction.
+# Works whether or not the app is running. Sessions and Liquibase's changelog table are left alone.
+#
+# Runs psql inside the compose.yaml PostgreSQL. RESET_DEMO_DATA_PSQL replaces that command, split on whitespace (the
+# tests point it at their own container); the SQL arrives on its standard input.
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+seed="$root/src/main/resources/db/seed"
+compose=(docker compose -f "$root/compose.yaml")
+if [[ -z "${RESET_DEMO_DATA_PSQL:-}" ]]; then
+  # The app stops the container when it shuts down, and exec reaches only a running one.
+  "${compose[@]}" up -d --wait postgres
+  # compose.yaml has no healthcheck, so --wait returns before PostgreSQL accepts connections. A first start also
+  # runs a temporary server that listens on the socket only, so probe over TCP, which the final server opens last.
+  ready=false
+  for _ in {1..30}; do
+    if "${compose[@]}" exec -T postgres psql -h localhost -U retrofit -d retrofit -qtAc "SELECT 1" >/dev/null 2>&1; then
+      ready=true
+      break
+    fi
+    sleep 1
+  done
+  if [[ "$ready" != true ]]; then
+    echo "PostgreSQL did not accept connections within 30 seconds" >&2
+    exit 1
+  fi
+  psql=("${compose[@]}" exec -T postgres psql -U retrofit -d retrofit)
+else
+  read -ra psql <<<"$RESET_DEMO_DATA_PSQL"
+fi
+
+demo_organizations="('00000000-0000-0000-0000-0000000b0001', '00000000-0000-0000-0000-0000000b0002',
+    '00000000-0000-0000-0000-0000000b0003')"
+original_accounts="('00000000-0000-0000-0000-00000000a001', '00000000-0000-0000-0000-00000000a002')"
+
+reset_sql() {
+  cat <<'SQL'
+DO $$
+BEGIN
+    IF to_regclass('databasechangelog') IS NOT NULL THEN
+        IF EXISTS (SELECT FROM databasechangelog WHERE id = 'db-202610082037-dev-seed-demo-data') THEN
+            RETURN;
+        END IF;
+    END IF;
+    RAISE EXCEPTION 'This database has no demo data to reset. Start the app once with the dev profile '
+        '(./mvnw spring-boot:run) so Liquibase creates the schema and the demo data, then run the script again.';
+END
+$$;
+LOCK TABLE ticket, ticket_comment, ticket_link, ticket_audit_entry, idempotency_key, app_user, team, organization
+    IN ACCESS EXCLUSIVE MODE;
+SQL
+  # The rollback knows only the demo organizations' tickets: one elsewhere can point at a demo team or account, and
+  # would keep a ticket number the restart hands out again.
+  cat <<SQL
+DO \$\$
+BEGIN
+    IF EXISTS (SELECT FROM ticket WHERE organization_id NOT IN $demo_organizations) THEN
+        RAISE EXCEPTION 'This database has tickets outside the demo organizations, which the reset does not know. '
+            'Delete them first, or recreate the database (docker compose down -v) and start the app again.';
+    END IF;
+END
+\$\$;
+SQL
+  # The rollback file clears the two original accounts' affiliation, which the single-role check forbids once it
+  # exists (Liquibase rolls the check back first). Accounts added later to a demo team or organization keep pointing
+  # at it, so the team and organization deletes would fail on their foreign keys. Lift the three constraints for the
+  # transaction and put them back as they were: the seed recreates the teams and organizations with the same ids.
+  for constraint in app_user_single_role_affiliation_check app_user_team_fk app_user_organization_fk; do
+    echo "SELECT pg_get_constraintdef(oid) AS $constraint FROM pg_constraint"
+    echo "WHERE conrelid = 'app_user'::regclass AND conname = '$constraint' \\gset"
+    echo "ALTER TABLE app_user DROP CONSTRAINT $constraint;"
+  done
+  echo '\echo Removing idempotency keys'
+  echo 'DELETE FROM idempotency_key;'
+  echo '\echo Removing the demo data and everything added to it'
+  cat "$seed/demo-data-rollback.sql"
+  echo
+  # The rollback keeps the two original accounts, which the dev-seed-users changeset made. Deleted here, the seed
+  # inserts them in full with the same ids, so whatever was changed on them goes and their sessions stay.
+  echo "DELETE FROM app_user WHERE id IN $original_accounts;"
+  echo '\echo Restarting the ticket numbers at 1001'
+  echo 'ALTER TABLE ticket ALTER COLUMN number RESTART WITH 1001;'
+  echo '\echo Seeding the demo data'
+  for file in demo-data.sql demo-data-created-audit.sql demo-data-link-audit.sql; do
+    cat "$seed/$file"
+    echo
+  done
+  for constraint in app_user_single_role_affiliation_check app_user_team_fk app_user_organization_fk; do
+    echo "ALTER TABLE app_user ADD CONSTRAINT $constraint :$constraint;"
+  done
+  echo '\echo Done'
+  echo "SELECT count(*) AS tickets, 'RET-' || min(number) AS first, 'RET-' || max(number) AS last FROM ticket;"
+}
+
+# A running app's requests lock tickets, keys and accounts in orders of their own, so one of them can deadlock with
+# the reset's LOCK. PostgreSQL then aborts one side; when that is the reset, nothing has changed and it runs again.
+for _ in 1 2 3; do
+  if output="$(reset_sql | "${psql[@]}" --single-transaction -v ON_ERROR_STOP=1 --quiet -f - 2>&1)"; then
+    printf '%s\n' "$output"
+    exit 0
+  fi
+  if [[ "$output" != *"deadlock detected"* ]]; then
+    break
+  fi
+done
+printf '%s\n' "$output" >&2
+exit 1

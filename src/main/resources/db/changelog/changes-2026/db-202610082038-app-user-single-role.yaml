@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: db-202610082038-app-user-single-role
+      author: retrofit
+      context: schema
+      comment: >-
+        A user is either a customer (USER, with an organization) or support staff (SUPPORT, with a team), never both.
+        Ordered after the dev seed, which gives the existing dev accounts their organization and team. Any other
+        account created before this change has neither, and only a person can tell which one it belongs to, so the
+        precondition halts with instructions instead of guessing.
+      preConditions:
+        - onFail: HALT
+        - onFailMessage: >-
+            Some app_user rows have no single role with its affiliation: each needs roles {USER} with an
+            organization_id, or roles {SUPPORT} with a team_id. Fix or delete them (README, "Creating a user"), then
+            restart. The rows: SELECT id, email, roles, organization_id, team_id FROM app_user WHERE NOT
+            ((roles = ARRAY['USER']::text[] AND organization_id IS NOT NULL AND team_id IS NULL) OR
+            (roles = ARRAY['SUPPORT']::text[] AND team_id IS NOT NULL AND organization_id IS NULL));
+        - sqlCheck:
+            expectedResult: 0
+            sql: |
+              SELECT count(*) FROM app_user
+              WHERE NOT ((roles = ARRAY['USER']::text[] AND organization_id IS NOT NULL AND team_id IS NULL)
+                         OR (roles = ARRAY['SUPPORT']::text[] AND team_id IS NOT NULL AND organization_id IS NULL))
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE app_user
+                  ADD CONSTRAINT app_user_single_role_affiliation_check CHECK (
+                      (roles = ARRAY['USER']::text[] AND organization_id IS NOT NULL AND team_id IS NULL)
+                      OR (roles = ARRAY['SUPPORT']::text[] AND team_id IS NOT NULL AND organization_id IS NULL)
+                  );
+      rollback:
+        - sql:
+            sql: ALTER TABLE app_user DROP CONSTRAINT app_user_single_role_affiliation_check;

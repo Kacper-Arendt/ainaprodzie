@@ -1,0 +1,85 @@
+spring:
+  application:
+    name: retrofit
+  datasource:
+    # No defaults here: an instance started without DB_URL, DB_USERNAME and
+    # DB_PASSWORD fails at startup instead of trying a local database. The dev
+    # and test profiles below carry the local fallbacks.
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    # Never leave this empty: with no contexts Liquibase runs every changeset,
+    # including the dev seed (context: dev) with its well-known passwords.
+    contexts: schema
+  session:
+    timeout: 8h
+    jdbc:
+      # Session tables are owned by Liquibase (db-202610071200-spring-session.yaml).
+      initialize-schema: never
+
+retrofit:
+  # Version of this server build. spring-boot-starter-parent filters
+  # application*.yml with @..@ delimiters, so this must stay quoted: an
+  # unquoted @ is not a valid YAML plain scalar.
+  api-version: "@project.version@"
+
+server:
+  shutdown: graceful
+  # A TLS-terminating proxy sits in front of the app; honour X-Forwarded-* headers.
+  forward-headers-strategy: framework
+
+management:
+  endpoint:
+    health:
+      # /actuator/health/liveness and /actuator/health/readiness on any
+      # platform, not only when Kubernetes is detected.
+      probes:
+        enabled: true
+
+springdoc:
+  api-docs:
+    # The API docs endpoint is a dev/test tool, not a production surface.
+    # OpenApiExportTests (test profile) generates the committed contract from it.
+    enabled: false
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    # Local fallbacks; spring-boot-docker-compose replaces them with the
+    # compose.yaml container's connection details.
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/retrofit}
+    username: ${DB_USERNAME:retrofit}
+    password: ${DB_PASSWORD:retrofit}
+  liquibase:
+    contexts: schema,dev
+
+springdoc:
+  api-docs:
+    enabled: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    # Local fallbacks; Testcontainers replaces them (@ServiceConnection).
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/retrofit}
+    username: ${DB_USERNAME:retrofit}
+    password: ${DB_PASSWORD:retrofit}
+
+springdoc:
+  api-docs:
+    enabled: true
+
+logging:
+  level:
+    # Each test context logs the whole Liquibase run and Spring's startup
+    # chatter; at INFO that buries test results in `./mvnw test` output.
+    liquibase: warn
+    org.springframework: warn

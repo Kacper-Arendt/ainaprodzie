@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: db-202610082032-app-user-affiliation
+      author: retrofit
+      context: schema
+      comment: >-
+        Links customers to their organization and support staff to their team. The (id, organization_id) and
+        (id, team_id) keys let tickets require an author from the ticket's organization and an assignee from its team.
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE app_user
+                  ADD COLUMN team_id uuid NULL,
+                  ADD CONSTRAINT app_user_organization_fk FOREIGN KEY (organization_id) REFERENCES organization (id),
+                  ADD CONSTRAINT app_user_team_fk FOREIGN KEY (team_id) REFERENCES team (id),
+                  ADD CONSTRAINT app_user_id_organization_ux UNIQUE (id, organization_id),
+                  ADD CONSTRAINT app_user_id_team_ux UNIQUE (id, team_id);
+
+              CREATE INDEX app_user_organization_ix ON app_user (organization_id);
+              CREATE INDEX app_user_team_ix ON app_user (team_id);
+
+              COMMENT ON COLUMN app_user.organization_id IS NULL;
+      rollback:
+        - sql:
+            sql: |
+              DROP INDEX app_user_team_ix;
+              DROP INDEX app_user_organization_ix;
+              ALTER TABLE app_user
+                  DROP CONSTRAINT app_user_id_team_ux,
+                  DROP CONSTRAINT app_user_id_organization_ux,
+                  DROP CONSTRAINT app_user_team_fk,
+                  DROP CONSTRAINT app_user_organization_fk,
+                  DROP COLUMN team_id;
+              COMMENT ON COLUMN app_user.organization_id IS
+                  'Owning organization; the foreign key arrives with the organizations table.';

@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: db-202610082034-ticket-comment
+      author: retrofit
+      context: schema
+      comment: Ticket conversation; internal = true marks an internal note that only support staff can read.
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE ticket_comment (
+                  id uuid PRIMARY KEY,
+                  ticket_id uuid NOT NULL REFERENCES ticket (id),
+                  author_id uuid NOT NULL REFERENCES app_user (id),
+                  internal boolean NOT NULL,
+                  body text NOT NULL
+                      CONSTRAINT ticket_comment_body_not_blank_check CHECK (btrim(body) <> ''),
+                  created_at timestamptz NOT NULL
+              );
+
+              CREATE INDEX ticket_comment_ticket_ix ON ticket_comment (ticket_id, created_at);
+              CREATE INDEX ticket_comment_author_ix ON ticket_comment (author_id);
+      rollback:
+        - sql:
+            sql: DROP TABLE ticket_comment;

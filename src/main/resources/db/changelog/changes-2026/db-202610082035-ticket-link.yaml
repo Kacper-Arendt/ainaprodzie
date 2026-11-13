@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: db-202610082035-ticket-link
+      author: retrofit
+      context: schema
+      comment: >-
+        Link between two tickets, at most one per pair. RELATED reads the same both ways; POTENTIAL_DUPLICATE points
+        from ticket_id (the later ticket) to linked_ticket_id (the earlier one it may duplicate).
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE ticket_link (
+                  id uuid PRIMARY KEY,
+                  ticket_id uuid NOT NULL REFERENCES ticket (id),
+                  linked_ticket_id uuid NOT NULL REFERENCES ticket (id),
+                  type text NOT NULL
+                      CONSTRAINT ticket_link_type_check CHECK (type IN ('RELATED','POTENTIAL_DUPLICATE')),
+                  created_by uuid NOT NULL REFERENCES app_user (id),
+                  created_at timestamptz NOT NULL,
+                  CONSTRAINT ticket_link_not_self_check CHECK (ticket_id <> linked_ticket_id)
+              );
+
+              CREATE UNIQUE INDEX ticket_link_pair_ux
+                  ON ticket_link (least(ticket_id, linked_ticket_id), greatest(ticket_id, linked_ticket_id));
+              CREATE INDEX ticket_link_ticket_ix ON ticket_link (ticket_id);
+              CREATE INDEX ticket_link_linked_ticket_ix ON ticket_link (linked_ticket_id);
+              CREATE INDEX ticket_link_created_by_ix ON ticket_link (created_by);
+      rollback:
+        - sql:
+            sql: DROP TABLE ticket_link;

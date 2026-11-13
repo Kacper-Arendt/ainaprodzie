@@ -1,0 +1,174 @@
+import { Box, Button, Flex, Link, SkipNavLink, Text } from '@chakra-ui/react'
+import { useQueryClient } from '@tanstack/react-query'
+import { Outlet, Link as RouterLink, useNavigate } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import {
+  useChangeLanguage,
+  useLogout,
+  useSession,
+  type SessionUser,
+} from '../../features/auth/use-auth.ts'
+import { ServiceFooter } from '../../features/meta/service-footer.tsx'
+import { CallerAffiliation } from '../../features/organization/caller-affiliation.tsx'
+import { Chip } from './chip.tsx'
+import { Lamp } from './lamp.tsx'
+import { LanguageSelector } from './language-selector.tsx'
+
+type Role = SessionUser['roles'][number]
+
+const MAIN_ID = 'main-content'
+
+const ROLE_LABEL_KEYS: Record<Role, string> = {
+  USER: 'shell.roles.USER',
+  SUPPORT: 'shell.roles.SUPPORT',
+}
+
+/**
+ * The signed-in frame: app name, language switch, who is signed in and the
+ * way out, over a centred content column. Mounted inside `SessionGate`, so the
+ * session is always present by the time it renders.
+ */
+export function AppShell() {
+  const { t } = useTranslation('common')
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const user = useSession().data
+  const logout = useLogout()
+  const changeLanguage = useChangeLanguage()
+
+  if (!user) return null
+
+  // Navigate before clearing: a cleared cache under the still-mounted gate
+  // would refetch the session and race the redirect.
+  const onLogout = () =>
+    logout.mutate(undefined, {
+      onSuccess: () => {
+        void navigate('/login', { replace: true })
+        queryClient.clear()
+      },
+    })
+
+  return (
+    <Box minH="100vh" bg="bg">
+      {/* The first Tab stop: past the header to the page, without a change of URL. */}
+      <SkipNavLink
+        id={MAIN_ID}
+        onClick={(event) => {
+          event.preventDefault()
+          document.getElementById(MAIN_ID)?.focus()
+        }}
+        zIndex="skipNav"
+        color="fg"
+        fontSize="14px"
+        fontWeight="semibold"
+        borderWidth="ink"
+        borderColor="border.control"
+        borderRadius="control"
+        px="16px"
+        boxShadow="raised"
+        _focusVisible={{
+          outline: '2px solid',
+          outlineColor: 'accent.focusRing',
+          outlineOffset: '2px',
+        }}
+      >
+        {t('shell.skipToContent')}
+      </SkipNavLink>
+      <Flex
+        as="header"
+        align="center"
+        wrap={{ base: 'wrap', sm: 'nowrap' }}
+        columnGap={{ base: '8px', sm: '16px' }}
+        rowGap="8px"
+        bg="bg"
+        borderBottomWidth="ink"
+        borderColor="border.control"
+        px={{ base: '16px', sm: '24px' }}
+        py="10px"
+      >
+        <Text
+          fontFamily="heading"
+          fontSize={{ base: '26px', sm: '30px' }}
+          lineHeight="1"
+          textTransform="uppercase"
+          letterSpacing="0.01em"
+          flex="1"
+          minW="0"
+          truncate
+        >
+          <Link
+            asChild
+            color="fg"
+            gap="10px"
+            borderRadius="control"
+            _hover={{ textDecoration: 'none' }}
+            _focusVisible={{ outline: '2px solid', outlineColor: 'accent.focusRing' }}
+          >
+            <RouterLink to="/">
+              {/* The course's mark: three lamps, one of each signal. */}
+              <Flex as="span" gap="3px" aria-hidden="true">
+                <Lamp tone="red" size="8px" />
+                <Lamp tone="amber" size="8px" />
+                <Lamp tone="green" size="8px" />
+              </Flex>
+              {t('app.name')}
+            </RouterLink>
+          </Link>
+        </Text>
+        <Box flexShrink="0">
+          <LanguageSelector onLanguageChange={(language) => changeLanguage.mutate(language)} />
+        </Box>
+        {/* On a phone who is signed in takes its own line under the bar, without the email. */}
+        <Flex
+          order={{ base: 1, sm: 0 }}
+          flexBasis={{ base: '100%', sm: 'auto' }}
+          direction={{ base: 'row', sm: 'column' }}
+          align={{ base: 'center', sm: 'flex-end' }}
+          gap={{ base: '8px', sm: '0' }}
+          textAlign={{ base: 'left', sm: 'right' }}
+          fontSize="14px"
+          minW="0"
+        >
+          <Box minW="0" truncate>
+            {user.displayName}
+            {user.roles.map((role) => (
+              <Box as="span" key={role} ms="8px">
+                <Chip tone="ink">
+                  {/* A role newer than this bundle shows its raw code, not a wrong label. */}
+                  {ROLE_LABEL_KEYS[role] ? t(ROLE_LABEL_KEYS[role]) : role}
+                </Chip>
+              </Box>
+            ))}
+          </Box>
+          <Text as="small" display={{ base: 'none', sm: 'block' }} color="fg.muted" fontSize="12px">
+            {user.email}
+          </Text>
+          <CallerAffiliation id={user.id} roles={user.roles} />
+        </Flex>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={logout.isPending}
+          onClick={onLogout}
+        >
+          {t('shell.logout')}
+        </Button>
+      </Flex>
+      <Box
+        as="main"
+        id={MAIN_ID}
+        // Focused by the skip link only, as the h1 is on arrival: no ring.
+        tabIndex={-1}
+        _focus={{ outline: 'none' }}
+        maxW="1200px"
+        mx="auto"
+        px={{ base: '16px', sm: '24px' }}
+        py={{ base: '20px', sm: '28px' }}
+      >
+        <Outlet />
+        <ServiceFooter />
+      </Box>
+    </Box>
+  )
+}

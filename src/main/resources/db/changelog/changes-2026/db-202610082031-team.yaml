@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: db-202610082031-team
+      author: retrofit
+      context: schema
+      comment: Support team with a description of the product area it is responsible for.
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE team (
+                  id uuid PRIMARY KEY,
+                  name text NOT NULL,
+                  description text NOT NULL,
+                  created_at timestamptz NOT NULL,
+                  updated_at timestamptz NOT NULL
+              );
+
+              CREATE UNIQUE INDEX team_name_ux ON team (name);
+      rollback:
+        - sql:
+            sql: DROP TABLE team;

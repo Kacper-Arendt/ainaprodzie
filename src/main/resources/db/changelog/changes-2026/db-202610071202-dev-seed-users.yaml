@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: db-202610071202-dev-seed-users
+      author: retrofit
+      context: dev
+      comment: Local development accounts (password "password"); applied only under the dev profile.
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO app_user (id, email, display_name, password_hash, roles, language, created_at, updated_at)
+              VALUES
+                  ('00000000-0000-0000-0000-00000000a001', 'user@example.com', 'Una User',
+                   '{bcrypt}$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG',
+                   ARRAY['USER']::text[], 'en', now(), now()),
+                  ('00000000-0000-0000-0000-00000000a002', 'support@example.com', 'Sam Support',
+                   '{bcrypt}$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG',
+                   ARRAY['SUPPORT']::text[], 'en', now(), now());
+      rollback:
+        - sql:
+            sql: |
+              DELETE FROM app_user
+              WHERE id IN ('00000000-0000-0000-0000-00000000a001', '00000000-0000-0000-0000-00000000a002');

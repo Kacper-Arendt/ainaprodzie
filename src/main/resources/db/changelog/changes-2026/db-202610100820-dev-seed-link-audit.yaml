@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: db-202610100820-dev-seed-link-audit
+      author: retrofit
+      context: dev
+      comment: >-
+        LINK audit entries on both tickets of every demo link, with the side-aware values a live link writes.
+      changes:
+        - sqlFile:
+            path: ../../seed/demo-data-link-audit.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
+      rollback:
+        - sql:
+            sql: |
+              DELETE FROM ticket_audit_entry a
+              USING ticket_link l, ticket t
+              WHERE t.id = l.ticket_id
+                AND t.organization_id IN ('00000000-0000-0000-0000-0000000b0001',
+                    '00000000-0000-0000-0000-0000000b0002', '00000000-0000-0000-0000-0000000b0003')
+                AND a.ticket_id = l.linked_ticket_id
+                AND a.field = 'LINK'
+                AND a.actor_id = l.created_by
+                AND a.changed_at = l.created_at
+                AND a.old_value IS NULL
+                AND a.new_value = CASE WHEN l.type = 'RELATED' THEN 'RELATED' ELSE 'HAS_POTENTIAL_DUPLICATE' END
+                    || ' RET-' || t.number;
+
+              UPDATE ticket_audit_entry a
+              SET new_value = regexp_replace(a.new_value, '^POTENTIAL_DUPLICATE_OF ', 'POTENTIAL_DUPLICATE ')
+              FROM ticket_link l, ticket t
+              WHERE t.id = l.ticket_id
+                AND t.organization_id IN ('00000000-0000-0000-0000-0000000b0001',
+                    '00000000-0000-0000-0000-0000000b0002', '00000000-0000-0000-0000-0000000b0003')
+                AND a.ticket_id = l.ticket_id
+                AND a.field = 'LINK'
+                AND a.changed_at = l.created_at
+                AND a.new_value ~ '^POTENTIAL_DUPLICATE_OF RET-[0-9]+$';
+
+              UPDATE ticket t
+              SET updated_at = greatest(
+                  t.created_at,
+                  (SELECT max(c.created_at) FROM ticket_comment c WHERE c.ticket_id = t.id),
+                  (SELECT max(a.changed_at) FROM ticket_audit_entry a WHERE a.ticket_id = t.id))
+              WHERE t.organization_id IN ('00000000-0000-0000-0000-0000000b0001',
+                  '00000000-0000-0000-0000-0000000b0002', '00000000-0000-0000-0000-0000000b0003');

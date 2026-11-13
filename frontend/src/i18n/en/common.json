@@ -1,0 +1,416 @@
+{
+  "app": {
+    "name": "Retrofit",
+    "documentTitle": "{{page}} – Retrofit"
+  },
+  "loading": "Loading…",
+  "language": {
+    "label": "Language"
+  },
+  "login": {
+    "pageTitle": "Sign in",
+    "subtitle": "Sign in to your account",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "invalidCredentials": "Invalid email or password.",
+    "sessionEnded": "Your session has ended. Sign in again to carry on where you left off."
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "network": "Retrofit cannot be reached. Check your connection and try again.",
+    "retry": "Try again",
+    "field": {
+      "required": "This field is required.",
+      "too-long": "This text is too long.",
+      "invalid": "This text contains a character that is not allowed."
+    }
+  },
+  "offline": {
+    "title": "You are offline.",
+    "body": "Retrofit shows what it last loaded, and anything you send goes out once the connection is back."
+  },
+  "shell": {
+    "logout": "Sign out",
+    "skipToContent": "Skip to main content",
+    "organization": "Organization: {{name}}",
+    "team": "Team: {{name}}",
+    "roles": {
+      "USER": "User",
+      "SUPPORT": "Support"
+    },
+    "service": "{{service}} · API {{version}}"
+  },
+  "home": {
+    "introSupport": "Tickets of every organization.",
+    "introCustomer": "Your organization's tickets."
+  },
+  "routeError": {
+    "notFoundTitle": "Page not found",
+    "notFoundBody": "The page you are looking for does not exist.",
+    "backHome": "Back to home",
+    "title": "Something went wrong",
+    "body": "Reload the page to try again.",
+    "reload": "Reload"
+  },
+  "dialog": {
+    "close": "Close dialog"
+  },
+  "tickets": {
+    "title": "Tickets",
+    "search": {
+      "label": "Search by reference, title or description",
+      "placeholder": "RET-1042 or words",
+      "submit": "Search"
+    },
+    "views": {
+      "label": "View",
+      "count_one": "{{count}} ticket",
+      "count_other": "{{count}} tickets",
+      "all": "All tickets",
+      "assignedToMe": "Assigned to me",
+      "myTeam": "My team",
+      "raisedByMe": "Raised by me",
+      "needsMyAnswer": "Needs my answer"
+    },
+    "sort": {
+      "label": "Sort",
+      "RESPONSE_DEADLINE": "Response deadline",
+      "RECENTLY_UPDATED": "Recently updated",
+      "LONGEST_WAITING": "Longest waiting"
+    },
+    "filters": {
+      "status": "Status",
+      "anyStatus": "Any status",
+      "category": "Category",
+      "anyCategory": "Any category",
+      "priority": "Priority",
+      "anyPriority": "Any priority",
+      "organization": "Organization",
+      "anyOrganization": "Any organization",
+      "team": "Team",
+      "anyTeam": "Any team",
+      "myTeam": "My team",
+      "assignee": "Assignee",
+      "anyAssignee": "Anyone",
+      "me": "Me",
+      "unknown": "Unknown",
+      "sla": "SLA",
+      "anySla": "Any",
+      "breached": "Breached",
+      "withinSla": "Within SLA",
+      "attention": "Needs attention",
+      "anyAttention": "Any",
+      "attentionValue": {
+        "PAST_DEADLINE": "Breach, unanswered",
+        "DUE_WITHIN_HOUR": "Due within an hour",
+        "UNANSWERED_CUSTOMER_COMMENT": "Customer wrote",
+        "UNASSIGNED": "Open, unassigned"
+      },
+      "toggle": "Filters",
+      "toggleCount": "Filters ({{count}})",
+      "clear": "Clear filters",
+      "active": {
+        "label": "Active filters",
+        "chip": "{{name}}: {{value}}",
+        "remove": "Remove filter {{filter}}",
+        "clearAll": "Clear all"
+      }
+    },
+    "columns": {
+      "reference": "Ticket",
+      "title": "Title",
+      "organization": "Organization",
+      "assignee": "Assignee",
+      "status": "Status",
+      "priority": "Priority",
+      "response": "Response"
+    },
+    "emptyTitle": "No tickets",
+    "empty": {
+      "search": "No ticket matches “{{text}}”.",
+      "searchAndFilters_one": "No ticket matches “{{text}}” with the filter {{filters}}.",
+      "searchAndFilters_other": "No ticket matches “{{text}}” with the filters {{filters}}.",
+      "filters_one": "No ticket matches the filter {{filters}}.",
+      "filters_other": "No ticket matches the filters {{filters}}.",
+      "none": "No ticket has been raised yet.",
+      "noneCustomer": "Your organization has not raised a ticket yet.",
+      "clearSearch": "Clear search"
+    },
+    "range": "{{from}}–{{to}} of {{total}}",
+    "previous": "Previous",
+    "next": "Next",
+    "slaBreached": "SLA breached",
+    "desk": {
+      "label": "Across all tickets:",
+      "pastDeadline_one": "SLA breach still unanswered",
+      "pastDeadline_other": "SLA breaches still unanswered",
+      "dueWithinHour": "due within an hour",
+      "unansweredCustomerComment": "with an unanswered customer comment",
+      "unassigned": "open and unassigned"
+    },
+    "customerComment": {
+      "ago": "Customer wrote {{duration}} ago",
+      "justNow": "Customer wrote just now"
+    },
+    "criticalMarker": "Critical priority",
+    "needsYourAnswer": "Needs your answer",
+    "unassigned": "Unassigned",
+    "titleRequired": "Give the ticket a title.",
+    "none": "None",
+    "status": {
+      "NEW": "New",
+      "IN_PROGRESS": "In progress",
+      "WAITING_FOR_CUSTOMER": "Waiting for customer",
+      "RESOLVED": "Resolved",
+      "CLOSED": "Closed"
+    },
+    "priority": {
+      "LOW": "Low",
+      "NORMAL": "Normal",
+      "HIGH": "High",
+      "CRITICAL": "Critical"
+    },
+    "category": {
+      "BUG": "Bug",
+      "QUESTION": "Question",
+      "FEATURE_REQUEST": "Feature request"
+    },
+    "duration": {
+      "days": "{{count}} d",
+      "hours": "{{count}} h",
+      "minutes": "{{count}} min"
+    },
+    "clock": {
+      "short": {
+        "due": "Due in {{duration}}",
+        "dueNow": "Due now",
+        "over": "{{duration}} over",
+        "answered": "Answered in {{duration}}",
+        "answeredLate": "Answered {{duration}} late",
+        "closedUnanswered": "Closed unanswered",
+        "closedLate": "Closed unanswered, late"
+      },
+      "long": {
+        "due": "First response due in {{duration}}",
+        "dueNow": "First response due now",
+        "over": "First response {{duration}} past the response deadline",
+        "answered": "First response after {{duration}}",
+        "answeredLate": "First response {{duration}} after the response deadline",
+        "closedUnanswered": "Closed without a first response",
+        "closedLate": "Closed without a first response, after the response deadline"
+      }
+    },
+    "customerClock": {
+      "waiting": {
+        "days_one": "Waiting for support for {{count}} day",
+        "days_other": "Waiting for support for {{count}} days",
+        "hours_one": "Waiting for support for {{count}} hour",
+        "hours_other": "Waiting for support for {{count}} hours",
+        "minutes_one": "Waiting for support for {{count}} minute",
+        "minutes_other": "Waiting for support for {{count}} minutes",
+        "underMinute": "Waiting for support for less than a minute"
+      },
+      "answered": {
+        "days_one": "Answered after {{count}} day",
+        "days_other": "Answered after {{count}} days",
+        "hours_one": "Answered after {{count}} hour",
+        "hours_other": "Answered after {{count}} hours",
+        "minutes_one": "Answered after {{count}} minute",
+        "minutes_other": "Answered after {{count}} minutes",
+        "underMinute": "Answered within a minute"
+      },
+      "closedUnanswered": "Closed before support answered",
+      "resolvedUnanswered": "Resolved before support answered",
+      "pastAim": {
+        "hours_one": "{{wait}}, longer than the {{count}} hour we aim for",
+        "hours_other": "{{wait}}, longer than the {{count}} hours we aim for",
+        "minutes_one": "{{wait}}, longer than the {{count}} minute we aim for",
+        "minutes_other": "{{wait}}, longer than the {{count}} minutes we aim for"
+      }
+    },
+    "statusLine": {
+      "awaitsYou": "Support is waiting for your answer",
+      "reply": "Reply",
+      "priority": "{{priority}} priority",
+      "assignee": "Assigned to {{name}}"
+    },
+    "details": {
+      "back": "All tickets",
+      "notFoundTitle": "Ticket not found",
+      "notFoundBody": "There is no ticket {{reference}} you can see.",
+      "facts": "Details",
+      "organization": "Organization",
+      "author": "Author",
+      "category": "Category",
+      "team": "Team",
+      "assignee": "Assignee",
+      "createdAt": "Created",
+      "firstResponseAt": "First response",
+      "responseDeadline": "Response deadline",
+      "waitingTime": "Waiting time",
+      "closedAt": "Closed",
+      "description": "Description",
+      "resolution": "Resolution",
+      "conversation": "Conversation",
+      "noComments": "No comments yet.",
+      "internalNote": "Internal note",
+      "support": "Support staff",
+      "links": "Linked tickets",
+      "history": "History",
+      "noHistory": "No changes yet.",
+      "changeFrom": "{{field}}: {{from}}",
+      "changeTo": "to",
+      "set": "{{field}} set to {{to}}",
+      "cleared": "{{field}} cleared (was {{from}})",
+      "linked": {
+        "RELATED": "Linked {{reference}} as related",
+        "POTENTIAL_DUPLICATE_OF": "Marked as a potential duplicate of {{reference}}",
+        "HAS_POTENTIAL_DUPLICATE": "Marked {{reference}} as a potential duplicate of this ticket"
+      },
+      "unlinked": "Removed the link to {{reference}}",
+      "edited": "{{field}}: edited",
+      "showChange": "Show the change",
+      "before": "Before",
+      "after": "After",
+      "empty": "—",
+      "quoted": "“{{text}}”",
+      "closedNotice": "This ticket is closed. To follow up, <newTicket>create a new ticket</newTicket>.",
+      "created": "Created the ticket"
+    },
+    "relation": {
+      "RELATED": "Related",
+      "POTENTIAL_DUPLICATE_OF": "May duplicate",
+      "HAS_POTENTIAL_DUPLICATE": "May be duplicated by"
+    },
+    "field": {
+      "CREATED": "Created",
+      "TITLE": "Title",
+      "DESCRIPTION": "Description",
+      "CATEGORY": "Category",
+      "PRIORITY": "Priority",
+      "STATUS": "Status",
+      "TEAM": "Team",
+      "ASSIGNEE": "Assignee",
+      "RESOLUTION": "Resolution",
+      "LINK": "Link"
+    },
+    "optional": "(optional)",
+    "new": {
+      "heading": "New ticket",
+      "intro": "Describe the problem or question. Support will set priority and assignment.",
+      "title": "Title",
+      "description": "Description",
+      "descriptionHint": "Say what you did, what you expected, what happened instead and in which project.",
+      "category": "Category",
+      "categoryUnsure": "Not sure",
+      "cancel": "Cancel",
+      "submit": "Create ticket",
+      "expectationHours_one": "Support staff give {{organization}} a first response within {{count}} hour.",
+      "expectationHours_other": "Support staff give {{organization}} a first response within {{count}} hours.",
+      "expectationMinutes_one": "Support staff give {{organization}} a first response within {{count}} minute.",
+      "expectationMinutes_other": "Support staff give {{organization}} a first response within {{count}} minutes."
+    },
+    "composer": {
+      "mode": "Comment visibility",
+      "publicComment": "Public comment",
+      "internalNote": "Internal note",
+      "label": "Public comment, visible to support staff and your colleagues at {{organization}}",
+      "placeholder": "Write a comment",
+      "publicLabel": "Public comment, visible to {{organization}}",
+      "publicPlaceholder": "Write a public comment",
+      "noteLabel": "Internal note, visible to support staff only",
+      "notePlaceholder": "Write an internal note",
+      "send": "Send to support and {{organization}}",
+      "sendTo": "Send to {{organization}}",
+      "addNote": "Add internal note",
+      "shortcut": "{{keys}} sends"
+    },
+    "close": {
+      "action": "Close ticket",
+      "title": "Close {{reference}}?",
+      "body": "Closing is final. After that, only support staff can add comments to the ticket.",
+      "awaitsAnswer": "Support asked you a question on this ticket. Close it anyway?",
+      "resolution": "Resolution",
+      "howSolved": "How was it solved?",
+      "answerInstead": "Answer instead",
+      "cancel": "Cancel",
+      "submit": "Close ticket"
+    },
+    "assign": {
+      "action": "Assign to me"
+    },
+    "editor": {
+      "discard": "Discard",
+      "save": "Save changes",
+      "unsaved": "Unsaved changes",
+      "saved": "Changes saved",
+      "updated": "Updated {{time}}",
+      "resolution": "Resolution",
+      "changed": "Changed",
+      "statusNotAllowed": "This ticket cannot move to that status from its current one.",
+      "resolutionNotResolved": "A resolution is given only when the ticket is resolved.",
+      "closeHint": "To close it, use Close ticket at the top of the page.",
+      "noFirstResponse": "This ticket has no first response yet. Send the customer a public comment before you resolve it."
+    },
+    "leave": {
+      "title": "Leave without saving?",
+      "body": "Your changes to {{reference}} are not saved: {{fields}}. Leaving now discards them.",
+      "keep": "Keep editing",
+      "discard": "Discard and leave",
+      "newTitle": "Leave without creating the ticket?",
+      "newBody": "Your ticket is not created yet. Leaving now discards what you entered: {{fields}}."
+    },
+    "content": {
+      "edit": "Edit",
+      "editLabel": "Edit title and description",
+      "heading": "Title and description",
+      "cancel": "Cancel",
+      "noDescription": "No description.",
+      "authorHint": "You can edit this until support starts working on the ticket. After that, add a comment instead."
+    },
+    "conflict": {
+      "message": "Someone changed this ticket after you opened it. Your changes were not saved.",
+      "reload": "Reload the ticket"
+    },
+    "problems": {
+      "closed": "This ticket is closed and can no longer be changed.",
+      "alreadyClosed": "This ticket has already been closed.",
+      "keyReused": "This request does not match the one sent before. Please submit it again.",
+      "forbidden": "You are not allowed to do this.",
+      "notEditable": "Support is already working on this ticket, so it can no longer be edited. Add a comment instead.",
+      "notResolved": "Resolve the ticket with a resolution before closing it."
+    },
+    "links": {
+      "empty": "No linked tickets yet.",
+      "remove": "Remove",
+      "removeLabel": "Remove link to {{reference}}",
+      "form": "Link a ticket",
+      "ticket": "Ticket",
+      "noResults": "No tickets match \"{{text}}\"",
+      "type": "Link as",
+      "types": {
+        "RELATED": "Related ticket",
+        "POTENTIAL_DUPLICATE": "Potential duplicate"
+      },
+      "submit": "Link",
+      "cancel": "Cancel",
+      "removed": "Removed the link to {{reference}}.",
+      "undo": "Undo",
+      "undoLabel": "Undo removing the link to {{reference}}",
+      "self": "A ticket cannot be linked to itself.",
+      "pickTicket": "Pick a ticket from the list.",
+      "searching": "Searching…"
+    },
+    "announce": {
+      "commentSent": "Comment sent.",
+      "noteAdded": "Internal note added.",
+      "contentSaved": "Title and description saved.",
+      "factsSaved": "Details saved.",
+      "assigned": "Assigned to you.",
+      "linked": "{{reference}} linked.",
+      "unlinked": "Link to {{reference}} removed.",
+      "closed": "Ticket closed."
+    }
+  }
+}

@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: db-202610082036-ticket-audit-entry
+      author: retrofit
+      context: schema
+      comment: >-
+        Audit history, one row per changed ticket field or link. Values are text snapshots as shown at the time of
+        the change (enum names, the team name, the assignee's display name, "RELATED RET-1003"), so renaming a team
+        or a user later does not rewrite history.
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE ticket_audit_entry (
+                  id uuid PRIMARY KEY,
+                  ticket_id uuid NOT NULL REFERENCES ticket (id),
+                  actor_id uuid NOT NULL REFERENCES app_user (id),
+                  changed_at timestamptz NOT NULL,
+                  field text NOT NULL
+                      CONSTRAINT ticket_audit_entry_field_check CHECK (field IN
+                          ('TITLE','DESCRIPTION','CATEGORY','PRIORITY','STATUS','TEAM','ASSIGNEE','RESOLUTION','LINK')),
+                  old_value text NULL,
+                  new_value text NULL,
+                  CONSTRAINT ticket_audit_entry_changed_check CHECK (old_value IS DISTINCT FROM new_value)
+              );
+
+              CREATE INDEX ticket_audit_entry_ticket_ix ON ticket_audit_entry (ticket_id, changed_at);
+              CREATE INDEX ticket_audit_entry_actor_ix ON ticket_audit_entry (actor_id);
+      rollback:
+        - sql:
+            sql: DROP TABLE ticket_audit_entry;
