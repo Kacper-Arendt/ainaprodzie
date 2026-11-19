@@ -33,6 +33,14 @@ const ROUTES = [
       </SessionGate>
     ),
   },
+  {
+    path: '/settings',
+    element: (
+      <SessionGate>
+        <AppShell />
+      </SessionGate>
+    ),
+  },
   { path: '/login', element: <LocationProbe /> },
 ]
 
@@ -183,5 +191,31 @@ describe('AppShell', () => {
 
     expect((await screen.findByTestId('location')).textContent).toBe('/login')
     await waitFor(() => expect(queryClient.getQueryCache().getAll()).toEqual([]))
+  })
+
+  it('shows the Settings link to support staff only, latched on /settings', async () => {
+    stubFetch([['/api/auth/session', () => jsonResponse(SESSION)]])
+    const router = renderRoutes(ROUTES, '/')
+
+    const link = await screen.findByRole('link', { name: 'Settings' })
+    expect(link.getAttribute('href')).toBe('/settings')
+    expect(link.getAttribute('aria-current')).toBeNull()
+
+    await router.navigate('/settings')
+
+    await waitFor(() =>
+      expect(screen.getByRole('link', { name: 'Settings' }).getAttribute('aria-current')).toBe(
+        'page',
+      ),
+    )
+  })
+
+  it('shows a customer no Settings link', async () => {
+    stubFetch([['/api/auth/session', () => jsonResponse({ ...SESSION, roles: ['USER'] })]])
+
+    renderRoutes(ROUTES, '/')
+    await screen.findByText('Jane Doe')
+
+    expect(screen.queryByRole('link', { name: 'Settings' })).toBeNull()
   })
 })

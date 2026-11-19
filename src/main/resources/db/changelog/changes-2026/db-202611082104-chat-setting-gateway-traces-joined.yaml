@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: db-202611082104-chat-setting-gateway-traces-joined
+      author: retrofit
+      context: schema
+      comment: The switch that joins LiteLLM's calls of one question into one trace while the app sends no spans.
+      changes:
+        - sql:
+            sql: ALTER TABLE chat_setting ADD COLUMN gateway_traces_joined boolean NOT NULL DEFAULT false;
+      rollback:
+        - sql:
+            sql: ALTER TABLE chat_setting DROP COLUMN gateway_traces_joined;

@@ -16,8 +16,9 @@ const TONES: Record<ChipTone, { bg: string; color: string; borderColor: string }
 /**
  * A stamp beside a name or in a table cell: a role, a status, an internal-note marker.
  * Mono capitals on an ink line, so it carries its own fill onto any surface.
+ * It never wraps unless `wrap` allows it, for a stamp that must fit a lane narrower than its words.
  */
-export function Chip(props: { tone?: ChipTone; children: ReactNode }) {
+export function Chip(props: { tone?: ChipTone; children: ReactNode; wrap?: boolean }) {
   const tone = props.tone ?? 'neutral'
   return (
     <Text
@@ -36,7 +37,8 @@ export function Chip(props: { tone?: ChipTone; children: ReactNode }) {
       fontWeight="600"
       letterSpacing="0.06em"
       textTransform="uppercase"
-      whiteSpace="nowrap"
+      whiteSpace={props.wrap ? 'normal' : 'nowrap'}
+      textAlign={props.wrap ? 'center' : undefined}
     >
       {props.children}
     </Text>

@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: db-202611111530-chat-setting-model
+      author: retrofit
+      context: schema
+      comment: The LiteLLM alias the chat sends every question to, chosen by support staff on the settings page.
+      changes:
+        - sql:
+            sql: ALTER TABLE chat_setting ADD COLUMN model text NOT NULL DEFAULT 'chat-gemini';
+      rollback:
+        - sql:
+            sql: ALTER TABLE chat_setting DROP COLUMN model;

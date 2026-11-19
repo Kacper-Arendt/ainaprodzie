@@ -7,3 +7,103 @@ services:
       POSTGRES_PASSWORD: retrofit
     ports:
       - '5432'
+    # Over TCP, not the socket: on a first start the image runs its init on a server that listens only on the socket,
+    # then restarts it, so a socket check would report ready too early.
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-h', 'localhost', '-U', 'retrofit', '-d', 'retrofit']
+      interval: 2s
+      start_period: 30s
+  litellm:
+    # Pinned to an exact version: LiteLLM releases very often (chat ADR 0002).
+    image: 'ghcr.io/berriai/litellm:v1.108.8'
+    command: ['--config', '/app/config.yaml', '--port', '4000']
+    volumes:
+      - './litellm/config.yaml:/app/config.yaml:ro'
+      - './litellm/presidio-recognizers.json:/app/presidio-recognizers.json:ro'
+      - './litellm/phoenix_callback.py:/app/phoenix_callback.py:ro'
+      - './litellm/personal_data_guardrail.py:/app/personal_data_guardrail.py:ro'
+    environment:
+      GEMINI_API_KEY: '${GEMINI_API_KEY:-}'
+      ANTHROPIC_API_KEY: '${ANTHROPIC_API_KEY:-}'
+      LITELLM_MASTER_KEY: 'sk-retrofit-dev'
+      # The guardrail personal-data of config.yaml (chat ADR 0017).
+      PRESIDIO_ANALYZER_API_BASE: 'http://presidio-analyzer:3000'
+      PRESIDIO_ANONYMIZER_API_BASE: 'http://presidio-anonymizer:3000'
+      # LiteLLM's own traces, in the Phoenix project of the app's spans, so a question can be one trace (chat ADR
+      # 0015). When Phoenix is down, the spans are dropped and the model calls go on.
+      PHOENIX_COLLECTOR_HTTP_ENDPOINT: 'http://phoenix:6006/v1/traces'
+      PHOENIX_PROJECT_NAME: 'retrofit'
+      # Only the admin UI on /ui needs it. A schema of its own keeps LiteLLM's tables apart from the app's.
+      DATABASE_URL: 'postgresql://retrofit:retrofit@postgres:5432/retrofit?schema=litellm'
+    # LiteLLM runs its migrations once at start and gives up if PostgreSQL does not answer yet.
+    depends_on:
+      postgres:
+        condition: service_healthy
+      presidio-analyzer:
+        condition: service_started
+      presidio-anonymizer:
+        condition: service_started
+    # A local model in litellm/config.yaml runs on the host. Docker Desktop defines this name itself, Linux needs it.
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - '127.0.0.1:4000:4000'
+    healthcheck:
+      test: ['CMD', 'python3', '-c', "import urllib.request; urllib.request.urlopen('http://localhost:4000/health/readiness')"]
+      interval: 10s
+      start_period: 40s
+  # Creates the app's virtual key in LiteLLM, or updates it, from litellm/app_key.py, then idles (chat ADR 0002). The
+  # app calls LiteLLM with that key, never with the master key above.
+  litellm-app-key:
+    image: 'ghcr.io/berriai/litellm:v1.108.8'
+    entrypoint: ['python3', '/app/app_key.py']
+    # Passes the stop signal on to Python, which as process 1 would ignore it.
+    init: true
+    volumes:
+      - './litellm/app_key.py:/app/app_key.py:ro'
+    environment:
+      LITELLM_URL: 'http://litellm:4000'
+      LITELLM_MASTER_KEY: 'sk-retrofit-dev'
+      LITELLM_APP_KEY: 'sk-retrofit-app-key'
+    depends_on:
+      litellm:
+        condition: service_healthy
+    # The full path, because LiteLLM's Python environment puts a script named test first on the PATH.
+    healthcheck:
+      test: ['CMD', '/bin/test', '-f', '/tmp/app-key-ready']
+      interval: 2s
+  # A fake provider for showing timeouts and retries, under the alias chat-chaos (chaos/chaos_provider.py). It calls
+  # nothing further; the question says whether it waits, fails or answers.
+  chaos-provider:
+    image: 'python:3.13-alpine'
+    command: ['python', '-u', '/app/chaos_provider.py', '8000']
+    volumes:
+      - './chaos/chaos_provider.py:/app/chaos_provider.py:ro'
+  phoenix:
+    # The chat's traces (chat ADR 0007) in the project retrofit, and LiteLLM's (chat ADR 0014) in the project litellm.
+    # The UI and the OTLP endpoint (/v1/traces) share port 6006. Traces stay in the container, so a restart forgets them.
+    image: 'arizephoenix/phoenix:21.1.0'
+    # Phoenix turns authentication on by default, which would refuse the spans and ask for a login. It listens
+    # only on loopback here.
+    environment:
+      PHOENIX_ENABLE_AUTH: 'false'
+    ports:
+      - '127.0.0.1:6006:6006'
+  # Presidio finds and masks the personal data LiteLLM's guardrail keeps from the provider (chat ADR 0017). Gunicorn 25
+  # in these images starts its control socket in a thread that may hold stderr's lock when the worker is forked; the
+  # worker then hangs on its first log line, so it is disabled.
+  presidio-analyzer:
+    image: 'ghcr.io/data-privacy-stack/presidio-analyzer:2.2.365'
+    volumes:
+      - './presidio/recognizers.yaml:/app/recognizers.yaml:ro'
+    environment:
+      GUNICORN_CMD_ARGS: '--no-control-socket'
+      RECOGNIZER_REGISTRY_CONF_FILE: '/app/recognizers.yaml'
+    ports:
+      - '127.0.0.1:5002:3000'
+  presidio-anonymizer:
+    image: 'ghcr.io/data-privacy-stack/presidio-anonymizer:2.2.365'
+    environment:
+      GUNICORN_CMD_ARGS: '--no-control-socket'
+    ports:
+      - '127.0.0.1:5001:3000'

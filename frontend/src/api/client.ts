@@ -5,8 +5,10 @@ const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
 const CSRF_COOKIE = 'XSRF-TOKEN'
 const CSRF_HEADER = 'X-XSRF-TOKEN'
 
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+
 export interface ApiOptions {
-  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+  method?: HttpMethod
   body?: unknown
   headers?: Record<string, string>
 }
@@ -45,10 +47,17 @@ async function toProblemError(response: Response): Promise<ProblemError> {
   }
 }
 
-export async function api<T>(path: string, options: ApiOptions = {}): Promise<T> {
-  const method = options.method ?? 'GET'
+/**
+ * The headers every API request carries: `Content-Type` for a JSON body and,
+ * on a mutating method, the CSRF header from its cookie. `api()` calls it, and
+ * so does a caller that has to run `fetch` itself, such as the chat's stream.
+ */
+export function requestHeaders(
+  method: HttpMethod,
+  options: { json?: boolean; headers?: Record<string, string> } = {},
+): Headers {
   const headers = new Headers(options.headers)
-  if (options.body !== undefined) {
+  if (options.json) {
     headers.set('Content-Type', 'application/json')
   }
   if (MUTATING_METHODS.has(method)) {
@@ -57,6 +66,15 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<T>
       headers.set(CSRF_HEADER, token)
     }
   }
+  return headers
+}
+
+export async function api<T>(path: string, options: ApiOptions = {}): Promise<T> {
+  const method = options.method ?? 'GET'
+  const headers = requestHeaders(method, {
+    json: options.body !== undefined,
+    headers: options.headers,
+  })
   let response: Response
   try {
     response = await fetch(path, {

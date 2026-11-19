@@ -51,6 +51,7 @@ class SecurityConfig {
 						// The login screen shows the service name before any session exists.
 						.requestMatchers(HttpMethod.GET, "/api/meta").permitAll()
 						.requestMatchers("/api/teams", "/api/teams/**").hasRole("SUPPORT")
+						.requestMatchers("/api/chat/settings", "/api/chat/models").hasRole("SUPPORT")
 						.requestMatchers("/api/**").authenticated()
 						.requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
 						.requestMatchers("/actuator/**").authenticated()

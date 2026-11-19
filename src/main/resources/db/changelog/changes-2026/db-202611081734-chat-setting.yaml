@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: db-202611081734-chat-setting
+      author: retrofit
+      context: schema
+      comment: The one row of chat settings, with the switch that exports the app's own traces to Phoenix.
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE chat_setting (
+                  id boolean PRIMARY KEY CONSTRAINT chat_setting_single_row_check CHECK (id),
+                  app_traces_exported boolean NOT NULL,
+                  created_at timestamptz NOT NULL,
+                  updated_at timestamptz NOT NULL
+              );
+
+              INSERT INTO chat_setting (id, app_traces_exported, created_at, updated_at)
+              VALUES (true, false, now(), now());
+      rollback:
+        - sql:
+            sql: DROP TABLE chat_setting;

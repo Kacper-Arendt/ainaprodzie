@@ -1,0 +1,115 @@
+{
+  "toggle": "Chat",
+  "title": "Chat",
+  "close": "Close the chat",
+  "newConversation": "New conversation",
+  "noTicketAccess": "The chat cannot see your tickets.",
+  "empty": {
+    "title": "Ask the chat",
+    "hint": "Ask in plain language, then follow up on its answers. It answers from general knowledge, not from the tickets."
+  },
+  "composer": {
+    "label": "Your question",
+    "placeholder": "Ask a question",
+    "send": "Send",
+    "stop": "Stop"
+  },
+  "speaker": {
+    "you": "You",
+    "chat": "Chat"
+  },
+  "pending": "Preparing the answer…",
+  "stopped": "Stopped before the answer was complete.",
+  "errors": {
+    "rate-limited": "Too many questions at once. Wait a moment and try again.",
+    "unavailable": "The chat is not available right now. Try again later.",
+    "timeout": "The answer took too long.",
+    "personal-data-blocked": "The chat did not send this question: the conversation holds personal data that must not reach the model, such as a card number. Remove it from the question and ask again, or start a new conversation if an earlier answer holds it.",
+    "failed": "The chat could not answer this question.",
+    "request": "The question could not be sent."
+  },
+  "settings": {
+    "link": "Settings",
+    "title": "Settings",
+    "subtitle": "How the chat picks its model and how its traces reach Phoenix.",
+    "model": {
+      "title": "Model",
+      "sentence": "Every chat question goes to this LiteLLM alias; litellm/config.yaml maps it to a provider model.",
+      "chosen": "Chat questions now go to {{model}}.",
+      "notLoaded": "The models could not be loaded."
+    },
+    "traces": {
+      "title": "App traces to Phoenix",
+      "on": "On",
+      "off": "Off",
+      "onSentence": "On: the app also sends its own spans, and each question shows as one trace with the app's spans and LiteLLM's model calls.",
+      "offSentence": "Off: only LiteLLM sends traces, one per model call, with the provider model and its cost but without the app's spans."
+    },
+    "join": {
+      "title": "Group LiteLLM calls per chat message",
+      "onSentence": "On: LiteLLM's calls for one chat message share one trace even while app traces are off. The app's spans never arrive then, so Phoenix lists each call as a row of its own within that trace.",
+      "offSentence": "Off: while app traces are off, each LiteLLM call is a trace of its own.",
+      "lockedSentence": "App traces already group each question into one trace, so this applies again only while they are off."
+    },
+    "llmSpans": {
+      "title": "App LLM traces to Phoenix",
+      "onSentence": "On: the app's span of a model call is an LLM span with the call's tokens, so a question's trace counts each call's tokens twice, beside LiteLLM's span.",
+      "offSentence": "Off: the app's span of a model call is a plain step, so each call's tokens and cost are counted once, on LiteLLM's span.",
+      "lockedSentence": "The app sends no spans while app traces are off, so this applies only while they are on."
+    },
+    "groups": {
+      "tracing": "Tracing in Phoenix"
+    },
+    "flow": {
+      "title": "Where the chat's data goes",
+      "meta": "As saved",
+      "boundary": "Runs on this machine",
+      "nodes": {
+        "app": "App",
+        "presidio": "Presidio",
+        "litellm": "LiteLLM",
+        "phoenix": "Phoenix",
+        "provider": "Model provider"
+      },
+      "hop": "{{from}} → {{to}}",
+      "phoenixTerm": "In Phoenix",
+      "forms": {
+        "sent": "Sent",
+        "notSent": "Not sent",
+        "asWritten": "As written",
+        "namesAsWritten": "Names as written"
+      },
+      "hops": {
+        "appToLitellm": {
+          "asWritten": "Questions as the users wrote them, names and other personal data included."
+        },
+        "appToPhoenix": {
+          "notSent": "The app sends no spans.",
+          "asWritten": "The app's spans, personal data included."
+        },
+        "litellmToPresidio": {
+          "sent": "Every request, before it goes to the provider: LiteLLM's guardrail."
+        },
+        "litellmToProvider": {
+          "namesAsWritten": "Names as written. The guardrail masks e-mail addresses, phone numbers, IBANs and PESELs, and a card number refuses the request."
+        },
+        "litellmToPhoenix": {
+          "sent": "Each model call, as the provider received it."
+        }
+      },
+      "shapes": {
+        "perQuestionWithSteps": "One trace per question: the app's spans with LiteLLM's model calls.",
+        "perQuestionModelCalls": "One trace per question, holding LiteLLM's model calls only.",
+        "perModelCall": "One trace per model call, from LiteLLM only."
+      }
+    },
+    "saving": "Saving…",
+    "saved": "Saved",
+    "state": {
+      "on": "on",
+      "off": "off"
+    },
+    "notSaved": "Not saved: \"{{title}}\" is still {{state}}.",
+    "announcement": "Saved: {{title}}. {{sentence}}"
+  }
+}

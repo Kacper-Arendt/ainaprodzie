@@ -1,0 +1,22 @@
+# The recognizers the Presidio analyzer of compose.yaml loads, in place of its defaults (chat ADR 0017). Only what is
+# asked for is listed; the defaults find more, such as URLs and US numbers, which nobody asks for.
+supported_languages:
+  - en
+recognizers:
+  # Names, from Presidio's English NLP model.
+  - name: SpacyRecognizer
+    type: predefined
+  - name: CreditCardRecognizer
+    type: predefined
+  - name: EmailRecognizer
+    type: predefined
+  - name: IbanRecognizer
+    type: predefined
+  - name: PhoneRecognizer
+    type: predefined
+  # Presidio loads its PESEL recognizer only for Polish by default, and every caller asks in English. Listed for
+  # English, it checks the checksum, so an 11-digit number of a PESEL's shape that is no PESEL stays as it is.
+  - name: PlPeselRecognizer
+    type: predefined
+    supported_languages:
+      - en

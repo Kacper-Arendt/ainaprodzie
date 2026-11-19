@@ -17,6 +17,152 @@
         ],
         "type" : "object"
       },
+      "ChatDoneEvent" : {
+        "properties" : {
+          "type" : {
+            "enum" : [
+              "done"
+            ],
+            "type" : "string"
+          }
+        },
+        "required" : [
+          "type"
+        ],
+        "type" : "object"
+      },
+      "ChatErrorEvent" : {
+        "properties" : {
+          "code" : {
+            "enum" : [
+              "rate-limited",
+              "unavailable",
+              "timeout",
+              "personal-data-blocked",
+              "failed"
+            ],
+            "type" : "string"
+          },
+          "type" : {
+            "enum" : [
+              "error"
+            ],
+            "type" : "string"
+          }
+        },
+        "required" : [
+          "code",
+          "type"
+        ],
+        "type" : "object"
+      },
+      "ChatEvent" : {
+        "discriminator" : {
+          "mapping" : {
+            "done" : "#/components/schemas/ChatDoneEvent",
+            "error" : "#/components/schemas/ChatErrorEvent",
+            "token" : "#/components/schemas/ChatTokenEvent"
+          },
+          "propertyName" : "type"
+        },
+        "oneOf" : [
+          {
+            "$ref" : "#/components/schemas/ChatTokenEvent"
+          },
+          {
+            "$ref" : "#/components/schemas/ChatDoneEvent"
+          },
+          {
+            "$ref" : "#/components/schemas/ChatErrorEvent"
+          }
+        ]
+      },
+      "ChatMessageRequest" : {
+        "properties" : {
+          "text" : {
+            "description" : "1 to 2,000 characters after trimming",
+            "maxLength" : 2000,
+            "minLength" : 1,
+            "type" : "string"
+          }
+        },
+        "required" : [
+          "text"
+        ],
+        "type" : "object"
+      },
+      "ChatModels" : {
+        "properties" : {
+          "models" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [
+          "models"
+        ],
+        "type" : "object"
+      },
+      "ChatSettings" : {
+        "properties" : {
+          "appLlmSpansExported" : {
+            "type" : "boolean"
+          },
+          "appTracesExported" : {
+            "type" : "boolean"
+          },
+          "gatewayTracesJoined" : {
+            "type" : "boolean"
+          },
+          "model" : {
+            "type" : "string"
+          }
+        },
+        "required" : [
+          "appLlmSpansExported",
+          "appTracesExported",
+          "gatewayTracesJoined",
+          "model"
+        ],
+        "type" : "object"
+      },
+      "ChatSettingsChange" : {
+        "properties" : {
+          "appLlmSpansExported" : {
+            "type" : "boolean"
+          },
+          "appTracesExported" : {
+            "type" : "boolean"
+          },
+          "gatewayTracesJoined" : {
+            "type" : "boolean"
+          },
+          "model" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "ChatTokenEvent" : {
+        "properties" : {
+          "text" : {
+            "type" : "string"
+          },
+          "type" : {
+            "enum" : [
+              "token"
+            ],
+            "type" : "string"
+          }
+        },
+        "required" : [
+          "text",
+          "type"
+        ],
+        "type" : "object"
+      },
       "CloseTicketRequest" : {
         "properties" : {
           "resolution" : {
@@ -874,6 +1020,304 @@
         "summary" : "The signed-in user, read fresh from the database on every call",
         "tags" : [
           "auth"
+        ]
+      }
+    },
+    "/api/chat/conversations/{conversationId}" : {
+      "delete" : {
+        "operationId" : "forget",
+        "parameters" : [
+          {
+            "in" : "path",
+            "name" : "conversationId",
+            "required" : true,
+            "schema" : {
+              "format" : "uuid",
+              "type" : "string"
+            }
+          }
+        ],
+        "responses" : {
+          "204" : {
+            "description" : "Forgotten, or never started"
+          },
+          "400" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description" : "Problem type slug: malformed-request (a conversationId that is not a UUID)"
+          },
+          "401" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description" : "Problem type slug: auth/unauthenticated"
+          },
+          "403" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description" : "Problem type slug: auth/forbidden (missing CSRF token)"
+          }
+        },
+        "summary" : "Forget a conversation of the signed-in user",
+        "tags" : [
+          "chat"
+        ]
+      }
+    },
+    "/api/chat/conversations/{conversationId}/messages" : {
+      "post" : {
+        "description" : "The answer is a text/event-stream whose event names are the events' types: token events with the answer text, then done, or error in its place. A failure before the stream starts is an ordinary problem response.",
+        "operationId" : "ask",
+        "parameters" : [
+          {
+            "in" : "path",
+            "name" : "conversationId",
+            "required" : true,
+            "schema" : {
+              "format" : "uuid",
+              "type" : "string"
+            }
+          },
+          {
+            "description" : "The interface language, en or pl; en when absent or neither",
+            "in" : "header",
+            "name" : "Accept-Language",
+            "required" : false,
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ChatMessageRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "text/event-stream" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ChatEvent"
+                }
+              }
+            },
+            "description" : "The answer as server-sent events"
+          },
+          "400" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description" : "Problem type slug: malformed-request (a conversationId that is not a UUID, or a body that cannot be read)"
+          },
+          "401" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description" : "Problem type slug: auth/unauthenticated"
+          },
+          "403" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description" : "Problem type slug: auth/forbidden (missing CSRF token)"
+          },
+          "422" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description" : "Problem type slug: validation (errors[].code field.required or field.too-long)"
+          }
+        },
+        "summary" : "Ask a question in a conversation and stream the answer",
+        "tags" : [
+          "chat"
+        ]
+      }
+    },
+    "/api/chat/models" : {
+      "get" : {
+        "operationId" : "models",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ChatModels"
+                }
+              }
+            },
+            "description" : "The LiteLLM aliases in their configured order"
+          },
+          "401" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description" : "Problem type slug: auth/unauthenticated"
+          },
+          "403" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description" : "Problem type slug: auth/forbidden (not support staff)"
+          }
+        },
+        "summary" : "The models the chat can use; support only",
+        "tags" : [
+          "chat"
+        ]
+      }
+    },
+    "/api/chat/settings" : {
+      "get" : {
+        "operationId" : "get",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ChatSettings"
+                }
+              }
+            },
+            "description" : "The stored settings"
+          },
+          "401" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description" : "Problem type slug: auth/unauthenticated"
+          },
+          "403" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description" : "Problem type slug: auth/forbidden (not support staff)"
+          }
+        },
+        "summary" : "The chat settings; support only",
+        "tags" : [
+          "chat"
+        ]
+      },
+      "patch" : {
+        "operationId" : "change",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ChatSettingsChange"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ChatSettings"
+                }
+              }
+            },
+            "description" : "The stored settings"
+          },
+          "400" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description" : "Problem type slug: malformed-request (body is not JSON)"
+          },
+          "401" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description" : "Problem type slug: auth/unauthenticated"
+          },
+          "403" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description" : "Problem type slug: auth/forbidden (not support staff, or missing CSRF token)"
+          },
+          "422" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description" : "Problem type slug: validation (errors[].code field.required for a blank model, model.unknown)"
+          }
+        },
+        "summary" : "Change the chat settings the body names, leaving the others as stored; support only",
+        "tags" : [
+          "chat"
         ]
       }
     },
@@ -2153,6 +2597,10 @@
     {
       "description" : "Customer organizations. Support sees all of them, a customer only their own.",
       "name" : "organizations"
+    },
+    {
+      "description" : "Questions to the app's assistant, answered by a model that has no access to the tickets.",
+      "name" : "chat"
     }
   ]
 }

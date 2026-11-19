@@ -28,11 +28,11 @@ This project uses the maister plugin for structured development workflows. When 
 - `./mvnw -Dskip.frontend spring-boot:run` plus `pnpm -C frontend dev`: hot reload on :5173
 - `./mvnw verify`: SPA build, backend tests (Testcontainers, Docker required), contract export
 - `cd frontend && pnpm lint && pnpm format:check && pnpm typecheck && pnpm test`: frontend checks (Node 24 on PATH, pinned in `.nvmrc`)
-- `pnpm -C frontend generate:api && git diff --exit-code docs/api/openapi.json frontend/src/api/types.gen.ts`: contract drift check
+- `pnpm -C frontend generate:api && git diff --exit-code docs/api/openapi.json frontend/src/api/types.gen.ts`: contract drift check (CI runs it too)
 
 ## Course Branches
 
-`master` is the app without AI; `lesson-N` branches stack the training's AI features on top.
+`master` is the app without AI; `lesson-N` branches stack the training's AI features on top. Read `BRANCHES.md` before branching, opening a PR or merging: it says which branch a change targets and how changes flow between branches.
 
 ## Architecture Rule
 

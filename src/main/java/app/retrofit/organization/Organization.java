@@ -6,7 +6,8 @@ import java.util.UUID;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-record Organization(@Schema(requiredMode = REQUIRED) UUID id,
+/// Public because the chat resolves organization names through [OrganizationAccess] from outside this package.
+public record Organization(@Schema(requiredMode = REQUIRED) UUID id,
 		@Schema(requiredMode = REQUIRED) String name,
 		@Schema(requiredMode = REQUIRED) int firstResponseSlaMinutes) {
 }

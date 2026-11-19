@@ -7,7 +7,8 @@ import java.util.UUID;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-record Team(@Schema(requiredMode = REQUIRED) UUID id,
+/// Public because the chat resolves team names through [OrganizationAccess] from outside this package.
+public record Team(@Schema(requiredMode = REQUIRED) UUID id,
 		@Schema(requiredMode = REQUIRED) String name,
 		@Schema(requiredMode = REQUIRED) String description,
 		@Schema(requiredMode = REQUIRED, description = "true when this is the signed-in user's team") boolean member,

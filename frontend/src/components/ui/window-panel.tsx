@@ -9,16 +9,27 @@ const SIGNALS = ['red', 'amber', 'green'] as const
  * The course's log card: a panel under a bar that names what it holds in mono
  * (`name`), with three lamps on the leading edge and a fact on the trailing
  * one (`meta`). `lamp` lights the one that says who owes a first response (red,
- * amber or green, in that order); without it the three stay dark. `raised` lifts the card with the hard shadow, for the one card a page leads with.
+ * amber or green, in that order); without it the three stay dark. `nameId` makes the name the
+ * window's `h2` under that id, so a `section` can be named by it. A name that is a sentence rather than a
+ * reference takes `wrapName` and wraps instead of being cut. `raised` lifts the card with the hard shadow, for the one card a page leads with.
  */
 export function WindowPanel({
   name,
+  nameId,
+  wrapName,
   meta,
   lamp,
   raised,
   children,
   ...props
-}: BoxProps & { name: ReactNode; meta?: ReactNode; lamp?: LampTone; raised?: boolean }) {
+}: BoxProps & {
+  name: ReactNode
+  nameId?: string
+  wrapName?: boolean
+  meta?: ReactNode
+  lamp?: LampTone
+  raised?: boolean
+}) {
   return (
     <Box
       bg="bg.panel"
@@ -45,9 +56,12 @@ export function WindowPanel({
           ))}
         </Flex>
         <Text
+          as={nameId === undefined ? undefined : 'h2'}
+          id={nameId}
           flex="1"
           minW="0"
-          truncate
+          truncate={!wrapName}
+          textWrap={wrapName ? 'balance' : undefined}
           fontFamily="mono"
           fontSize="13px"
           fontWeight="600"

@@ -25,6 +25,11 @@ export interface SegmentedOption<V extends string> {
  * `countLabel` words the count, in one string, so no stray space falls before
  * the comma as it does when the name is joined from separate elements.
  * A count marked `attention` stands out above zero, as the desk summary's do.
+ * `disabled` keeps the choice on screen, the pressed half still pressed, and
+ * makes every half inoperable, the dimmed face drawn at the same geometry.
+ * `describedBy` is the id of the text that explains the choice, read with the
+ * group's name; `busy` marks the group as saving (`aria-busy`). `equal` gives the
+ * halves of a row the width of the widest, for a pair of words such as On and Off.
  */
 export function SegmentedToggle<V extends string>(props: {
   label: string
@@ -32,14 +37,22 @@ export function SegmentedToggle<V extends string>(props: {
   value: V | undefined
   onChange: (value: V) => void
   size?: 'sm' | 'md'
+  disabled?: boolean
+  describedBy?: string
+  busy?: boolean
+  equal?: boolean
   countLabel?: (count: number) => string
 }) {
   return (
     <Flex
       role="group"
       aria-label={props.label}
+      aria-describedby={props.describedBy}
+      aria-busy={props.busy}
       w={{ base: 'full', sm: 'fit-content' }}
-      display={{ base: 'grid', sm: 'flex' }}
+      display={props.equal ? 'grid' : { base: 'grid', sm: 'flex' }}
+      gridAutoFlow={props.equal ? { sm: 'column' } : undefined}
+      gridAutoColumns={props.equal ? { sm: '1fr' } : undefined}
       gridTemplateColumns={{
         base: `repeat(${props.options.length}, minmax(0, 1fr))`,
         sm: 'none',
@@ -66,6 +79,7 @@ export function SegmentedToggle<V extends string>(props: {
           <Button
             key={option.value}
             type="button"
+            disabled={props.disabled}
             aria-pressed={pressed}
             aria-label={
               props.countLabel && option.count !== undefined

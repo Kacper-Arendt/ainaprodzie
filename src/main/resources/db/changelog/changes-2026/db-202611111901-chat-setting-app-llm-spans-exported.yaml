@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: db-202611111901-chat-setting-app-llm-spans-exported
+      author: retrofit
+      context: schema
+      comment: The switch that sends the app's model span as an LLM span, counting each call's tokens beside LiteLLM's.
+      changes:
+        - sql:
+            sql: ALTER TABLE chat_setting ADD COLUMN app_llm_spans_exported boolean NOT NULL DEFAULT true;
+      rollback:
+        - sql:
+            sql: ALTER TABLE chat_setting DROP COLUMN app_llm_spans_exported;

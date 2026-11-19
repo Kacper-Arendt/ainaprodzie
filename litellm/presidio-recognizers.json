@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Email address under any top-level domain",
+    "supported_language": "en",
+    "supported_entity": "EMAIL_ADDRESS",
+    "patterns": [
+      {
+        "name": "email",
+        "score": 0.9,
+        "regex": "[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,}"
+      }
+    ]
+  }
+]

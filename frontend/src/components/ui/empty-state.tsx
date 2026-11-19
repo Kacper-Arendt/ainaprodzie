@@ -30,6 +30,8 @@ export function NotFoundMark() {
 export function EmptyState(props: {
   icon?: ReactNode
   title?: string
+  /** A heading level when the title opens a section of the outline; bold text otherwise. */
+  titleAs?: 'h2' | 'h3'
   headline?: boolean
   children?: ReactNode
   action?: ReactNode
@@ -45,7 +47,13 @@ export function EmptyState(props: {
         (props.headline === true ? (
           <PageHeading title={props.title} fontSize="32px" color="fg" mb="8px" />
         ) : (
-          <Text as="strong" display="block" fontWeight="bold" color="fg" mb="4px">
+          <Text
+            as={props.titleAs ?? 'strong'}
+            display="block"
+            fontWeight="bold"
+            color="fg"
+            mb="4px"
+          >
             {props.title}
           </Text>
         ))}

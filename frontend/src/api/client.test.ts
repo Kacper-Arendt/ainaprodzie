@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { api } from './client.ts'
+import { api, requestHeaders } from './client.ts'
 import { NetworkError, ProblemError } from './errors.ts'
 import { jsonResponse as harnessResponse, stubFetch } from '../test/harness.tsx'
 
@@ -53,6 +53,19 @@ describe('api client', () => {
     expect(post.get('X-XSRF-TOKEN')).toBe('csrf-123')
     expect(post.get('Content-Type')).toBe('application/json')
     expect(get.has('Content-Type')).toBe(false)
+    expect(get.has('X-XSRF-TOKEN')).toBe(false)
+  })
+
+  it('builds the same headers for a caller that runs its own fetch', () => {
+    const post = requestHeaders('POST', { json: true, headers: { Accept: 'text/event-stream' } })
+    const del = requestHeaders('DELETE')
+    const get = requestHeaders('GET', { json: true })
+
+    expect(post.get('Content-Type')).toBe('application/json')
+    expect(post.get('X-XSRF-TOKEN')).toBe('csrf-123')
+    expect(post.get('Accept')).toBe('text/event-stream')
+    expect(del.get('X-XSRF-TOKEN')).toBe('csrf-123')
+    expect(del.has('Content-Type')).toBe(false)
     expect(get.has('X-XSRF-TOKEN')).toBe(false)
   })
 

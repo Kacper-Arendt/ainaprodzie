@@ -67,6 +67,14 @@ import {
   type TicketSummary,
 } from './use-tickets.ts'
 
+/**
+ * The condition under which the facts take a 300px column beside the ticket,
+ * leaving the main column about 400px. It is a container query on the page's
+ * own width, not a breakpoint, because the docked chat narrows the page without
+ * changing the window.
+ */
+const FACTS_BESIDE = '@container ticket-page (min-width: 720px)'
+
 export function TicketPage() {
   const { t } = useTranslation('common')
   const queryClient = useQueryClient()
@@ -229,73 +237,84 @@ function TicketView(props: { ticket: TicketDetails; back: ReactNode }) {
       />
       {/* Source order is reading order on a phone and for the keyboard: the ticket and its
           conversation, then the details (whose editor is support's everyday control), then its links
-          and history. From md the details move into a side column beside them. */}
-      <Grid
-        templateColumns={{ base: 'minmax(0, 1fr)', md: 'minmax(0, 1fr) 300px' }}
-        // Rows: the header alert, the rest of the conversation beside the details, then the links and
-        // history. The details and the last row span a flexible row, so they add height only there
-        // and each column stacks without gaps whichever is taller.
-        templateRows={{ md: 'auto auto 1fr' }}
-        columnGap="16px"
-        alignItems="start"
-      >
-        {headerAlert && (
-          <Box minW="0" gridColumn={{ md: '2' }} gridRow={{ md: '1' }}>
-            {headerAlert}
-          </Box>
-        )}
-        <Box minW="0" gridColumn={{ md: '1' }} gridRow={{ md: '1 / span 2' }}>
-          <TicketContentPanel
-            key={writes.content.key}
-            ticket={props.ticket}
-            clock={isSupport}
-            mayEdit={mayEdit}
-            authorEdits={!isSupport}
-            write={writes.content}
-          />
-          {/* Support staff edit a resolved ticket's resolution in the details editor instead. */}
-          {(closed || (!isSupport && summary.status === 'RESOLVED')) && (
-            <Resolution ticket={props.ticket} />
-          )}
-          <Panel>
-            <PanelHead title={t('tickets.details.conversation')} />
-            <Conversation ticket={props.ticket} />
-            <CommentComposer
-              reference={summary.reference}
-              organization={summary.organization.name}
-              closed={closed}
-              isSupport={isSupport}
-              write={writes.comment}
-            />
-          </Panel>
-        </Box>
-        {/* Under the header alert when there is one, else from the top. */}
-        <Box
-          minW="0"
-          gridColumn={{ md: '2' }}
-          gridRow={{ md: headerAlert ? '2 / span 2' : '1 / span 3' }}
+          and history. With the facts beside the ticket the details move into a side column. */}
+      <Box containerType="inline-size" containerName="ticket-page">
+        <Grid
+          templateColumns="minmax(0, 1fr)"
+          columnGap="16px"
+          alignItems="start"
+          // Rows: the header alert, the rest of the conversation beside the details, then the links and
+          // history. The details and the last row span a flexible row, so they add height only there
+          // and each column stacks without gaps whichever is taller.
+          css={{
+            [FACTS_BESIDE]: {
+              gridTemplateColumns: 'minmax(0, 1fr) 300px',
+              gridTemplateRows: 'auto auto 1fr',
+            },
+          }}
         >
-          <TicketFacts
-            ticket={props.ticket}
-            isSupport={isSupport}
-            alert={writes.facts.top}
-            editor={
-              isSupport &&
-              !closed && (
-                <TicketFactsEditor
-                  key={writes.facts.key}
-                  ticket={props.ticket}
-                  write={writes.facts}
-                />
-              )
-            }
-          />
-        </Box>
-        <Box minW="0" gridColumn={{ md: '1' }} gridRow={{ md: '3' }}>
-          <Links ticket={props.ticket} isSupport={isSupport} write={writes.links} />
-          <History ticket={props.ticket} />
-        </Box>
-      </Grid>
+          {headerAlert && (
+            <Box minW="0" css={{ [FACTS_BESIDE]: { gridColumn: '2', gridRow: '1' } }}>
+              {headerAlert}
+            </Box>
+          )}
+          <Box minW="0" css={{ [FACTS_BESIDE]: { gridColumn: '1', gridRow: '1 / span 2' } }}>
+            <TicketContentPanel
+              key={writes.content.key}
+              ticket={props.ticket}
+              clock={isSupport}
+              mayEdit={mayEdit}
+              authorEdits={!isSupport}
+              write={writes.content}
+            />
+            {/* Support staff edit a resolved ticket's resolution in the details editor instead. */}
+            {(closed || (!isSupport && summary.status === 'RESOLVED')) && (
+              <Resolution ticket={props.ticket} />
+            )}
+            <Panel>
+              <PanelHead title={t('tickets.details.conversation')} />
+              <Conversation ticket={props.ticket} />
+              <CommentComposer
+                reference={summary.reference}
+                organization={summary.organization.name}
+                closed={closed}
+                isSupport={isSupport}
+                write={writes.comment}
+              />
+            </Panel>
+          </Box>
+          {/* Under the header alert when there is one, else from the top. */}
+          <Box
+            minW="0"
+            css={{
+              [FACTS_BESIDE]: {
+                gridColumn: '2',
+                gridRow: headerAlert ? '2 / span 2' : '1 / span 3',
+              },
+            }}
+          >
+            <TicketFacts
+              ticket={props.ticket}
+              isSupport={isSupport}
+              alert={writes.facts.top}
+              editor={
+                isSupport &&
+                !closed && (
+                  <TicketFactsEditor
+                    key={writes.facts.key}
+                    ticket={props.ticket}
+                    write={writes.facts}
+                  />
+                )
+              }
+            />
+          </Box>
+          <Box minW="0" css={{ [FACTS_BESIDE]: { gridColumn: '1', gridRow: '3' } }}>
+            <Links ticket={props.ticket} isSupport={isSupport} write={writes.links} />
+            <History ticket={props.ticket} />
+          </Box>
+        </Grid>
+      </Box>
       <CloseTicketDialog
         reference={summary.reference}
         resolution={props.ticket.resolution}

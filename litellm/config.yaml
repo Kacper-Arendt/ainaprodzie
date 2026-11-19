@@ -1,0 +1,119 @@
+model_list:
+  # The app's virtual key (litellm/app_key.py) reaches only the aliases in the access group app (chat ADR 0002). An alias
+  # the app calls goes into it, or the app gets 403. It also takes the guardrail personal-data below, or personal data
+  # in a question reaches the provider (chat ADR 0017).
+  # The alias must contain "gemini", or LiteLLM drops Gemini's thought signatures (chat ADR 0002).
+  - model_name: chat-gemini
+    litellm_params:
+      model: gemini/gemini-3.5-flash-lite
+      api_key: os.environ/GEMINI_API_KEY
+      guardrails: ['personal-data']
+    model_info:
+      access_groups: ['app']
+  # A stronger model under the same alias.
+  # - model_name: chat-gemini
+  #   litellm_params:
+  #     model: gemini/gemini-3.8-flash
+  #     api_key: os.environ/GEMINI_API_KEY
+  #     guardrails: ['personal-data']
+  #   model_info:
+  #     access_groups: ['app']
+  # Another provider, under its own alias: export ANTHROPIC_API_KEY and choose chat-anthropic on the app's settings
+  # page. Unlike Gemini, Anthropic caches the
+  # prompt only when asked to: the injection point marks the system message (chat ADR 0008).
+  - model_name: chat-anthropic
+    litellm_params:
+      model: anthropic/claude-haiku-5-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      cache_control_injection_points:
+        - location: message
+          role: system
+      guardrails: ['personal-data']
+    model_info:
+      access_groups: ['app']
+  # A stronger and costlier model under the same alias.
+  # - model_name: chat-anthropic
+  #   litellm_params:
+  #     model: anthropic/claude-sonnet-5-5
+  #     api_key: os.environ/ANTHROPIC_API_KEY
+  #     cache_control_injection_points:
+  #       - location: message
+  #         role: system
+  #     guardrails: ['personal-data']
+  #   model_info:
+  #     access_groups: ['app']
+  # A local model served by Ollama on the host (ollama pull qwen3:8b), with no key and no cost: add chat-local to
+  # retrofit.chat.models in application.yml and choose it on the settings page. On Linux, Ollama must listen beyond loopback (OLLAMA_HOST=0.0.0.0) for the container to
+  # reach it. Ollama's default context holds a few thousand tokens and silently drops the start of a longer request,
+  # the system prompt first, so num_ctx makes room for the prompt and the conversation. It reasons before it answers,
+  # so its timeout outlasts router_settings' 15 seconds.
+  # - model_name: chat-local
+  #   litellm_params:
+  #     model: ollama_chat/qwen3:8b
+  #     api_base: http://host.docker.internal:11434
+  #     num_ctx: 16384
+  #     timeout: 120
+  #     guardrails: ['personal-data']
+  #   model_info:
+  #     access_groups: ['app']
+  # A fake provider for showing timeouts and retries (chaos/chaos_provider.py): "slow 20", "429", "500" or "2x 500" in
+  # the question says what it does, under router_settings' timeout and retries like any provider.
+  - model_name: chat-chaos
+    litellm_params:
+      model: openai/chaos
+      api_base: http://chaos-provider:8000/v1
+      api_key: none
+      guardrails: ['personal-data']
+    model_info:
+      access_groups: ['app']
+
+# Before a request reaches the provider, Presidio replaces an email address, phone number, IBAN or PESEL in it with
+# its type, such as <EMAIL_ADDRESS>, and blocks a request holding a card number (400 "Blocked entity detected:
+# CREDIT_CARD"), which the chat reads by those words and answers by saying so (chat ADR 0017). Not PERSON: Presidio takes
+# ticket references and product names, such as Taskline, for people. presidio-recognizers.json adds an email under any
+# top-level domain, as Presidio's own misses the demo data's .example; the PESEL comes from the analyzer's
+# presidio/recognizers.yaml.
+# - pre_call only and no output_parse_pii: restoring would buffer the whole stream before the user reads a word.
+# - It fails closed: when Presidio does not answer within timeout seconds the request fails and nothing reaches the
+#   provider. PRESIDIO_ANALYZER_API_BASE and PRESIDIO_ANONYMIZER_API_BASE in compose.yaml name the two services.
+# - personal_data_guardrail.py is LiteLLM's presidio that takes no part of an IBAN for a card number: Presidio finds
+#   one inside some IBANs, and presidio would refuse a request that holds such an IBAN. It masks the input only: the
+#   answers are what the user may read.
+guardrails:
+  - guardrail_name: personal-data
+    litellm_params:
+      guardrail: personal_data_guardrail.PersonalDataGuardrail
+      mode: pre_call
+      presidio_language: en
+      timeout: 2
+      pii_entities_config:
+        EMAIL_ADDRESS: MASK
+        PHONE_NUMBER: MASK
+        IBAN_CODE: MASK
+        CREDIT_CARD: BLOCK
+        PL_PESEL: MASK
+      presidio_ad_hoc_recognizers: /app/presidio-recognizers.json
+
+# LiteLLM traces every model call to the Phoenix of compose.yaml, in the project the app's spans use, named by
+# PHOENIX_PROJECT_NAME (chat ADR 0015): the provider model it called and its cost, with the prompt and answer the
+# provider received, after the guardrail above. A caller's traceparent header makes the call's spans children of the
+# caller's span. phoenix_callback.py is LiteLLM's arize_phoenix that prices each call once (chat ADR 0014). Without
+# LITELLM_OTEL_V2: that one names the alias, which Phoenix cannot price, and prints every span, prompts included, to
+# the container's log.
+#
+# The request metadata (prompt_name, prompt_version, conversation_id) reaches the spans in full under
+# metadata.requester_metadata, and Phoenix filters on it, so no allowlist names the keys. The request's user, the
+# caller's id, is the spans' user.id and LiteLLM's end user; phoenix_callback.py makes conversation_id the session.id.
+litellm_settings:
+  callbacks: ['phoenix_callback.handler']
+
+# Each provider call may take 15 seconds and is retried once, rate limits included; the app's own timeout (35s in
+# application.yml) holds both, and its SDK retries once more within the same 35s, so a rate-limited question reaches
+# the provider up to four times (chat ADR 0002).
+router_settings:
+  num_retries: 1
+  timeout: 15
+
+general_settings:
+  # The same prompts and answers in the spend logs, the admin UI's Logs.
+  store_prompts_in_spend_logs: true

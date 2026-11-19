@@ -6,6 +6,9 @@ import { Chip } from '../../components/ui/chip.tsx'
 import { Lamp, type LampTone } from '../../components/ui/lamp.tsx'
 import {
   DataTable,
+  TABLE_FITS,
+  TABLE_ROOMY,
+  TABLE_TWO_LINES,
   type DataTableColumn,
   type StackedLayout,
 } from '../../components/ui/data-table.tsx'
@@ -22,8 +25,8 @@ import {
   clockLamp,
   clockText,
   customerClockEmphasis,
-  customerCommentText,
   customerClockText,
+  customerCommentText,
   label,
   priorityEmphasis,
   PRIORITY_KEYS,
@@ -104,8 +107,8 @@ export function TicketList() {
             key: 'organization' as const,
             header: t('tickets.columns.organization'),
             width: '130px',
-            // Below `xl` the title keeps its room at 1024 by carrying the organization under it.
-            fromXl: true,
+            // Short of `TABLE_ROOMY` the title keeps its room by carrying the organization under it.
+            wideOnly: true,
           },
           // A support name or "Nieprzypisane" fits; a longer name truncates.
           { key: 'assignee' as const, header: t('tickets.columns.assignee'), width: '120px' },
@@ -137,22 +140,23 @@ export function TicketList() {
       stackedAlign: 'end',
     },
   ]
-  // Below `lg` a row reads as the reference with its clock, the title, then for
+  // Where the table does not fit, a row reads as the reference with its clock, the title, then for
   // support staff the organization with the status and the assignee with the
   // priority; a customer's row has neither, so status and priority share a line,
   // the labelled priority on the trailing edge where the wide column gives it room.
   // The trailing column takes at most 60% of the row, where the clock wraps its
   // own words, and the leading one truncates.
-  // From `md`, half a desktop screen, a row takes two lines: the reference, the
-  // title and the clock, then the rest under the title in tracks wide enough for
-  // the longest status chip and a semibold "Priorytet Krytyczny", so the values
-  // line up down the list as columns.
+  // From `TABLE_TWO_LINES` (half a desktop screen, or the list beside the docked
+  // chat) a row takes two lines: the reference, the title and the clock, then
+  // the rest under the title in tracks wide enough for the longest status chip
+  // and a semibold "Priorytet Krytyczny", so the values line up down the list
+  // as columns.
   const stacked: StackedLayout = {
     templateColumns: 'minmax(0, 1fr) fit-content(60%)',
     templateAreas: isSupport
       ? `"reference response" "title title" "organization status" "assignee priority"`
       : `"reference response" "title title" "status priority"`,
-    md: isSupport
+    twoLines: isSupport
       ? {
           templateColumns: '100px minmax(0, 1fr) 120px 160px 140px',
           templateAreas: `"reference title title response response" ". organization assignee status priority"`,
@@ -197,11 +201,9 @@ export function TicketList() {
           asChild
           {...REFERENCE_LINK_STYLE}
           // A stacked row is one tap target: the link stretches over it.
-          _before={{
-            content: '""',
-            position: 'absolute',
-            inset: '0',
-            display: { base: 'block', lg: 'none' },
+          css={{
+            _before: { content: '""', position: 'absolute', inset: '0' },
+            [TABLE_FITS]: { _before: { display: 'none' } },
           }}
         >
           <RouterLink
@@ -215,16 +217,24 @@ export function TicketList() {
       title: (
         <>
           {/* Two stacked lines end on more than one word where the browser can manage it. */}
-          <Text lineClamp={{ base: 2, md: 1 }} overflowWrap="anywhere" textWrap="pretty">
+          <Text
+            overflowWrap="anywhere"
+            textWrap="pretty"
+            css={{ lineClamp: 2, [TABLE_TWO_LINES]: { lineClamp: 1 } }}
+          >
             {ticket.priority === 'CRITICAL' && <CriticalMarker />}
             {ticket.title}
           </Text>
           {isSupport && (
             <Text
-              display={{ base: 'none', lg: 'block', xl: 'none' }}
               truncate
               color="fg.muted"
               fontSize="13px"
+              css={{
+                display: 'none',
+                [TABLE_FITS]: { display: 'block' },
+                [TABLE_ROOMY]: { display: 'none' },
+              }}
             >
               {ticket.organization.name}
             </Text>
@@ -416,15 +426,6 @@ export function TicketList() {
   )
 }
 
-/** A lamp set in the clock's first line, so it stays beside the words when they wrap. */
-function InlineLamp(props: { tone: LampTone }) {
-  return (
-    <Box as="span" me="8px">
-      <Lamp tone={props.tone} />
-    </Box>
-  )
-}
-
 /** The queue's lamp: red while a breach waits unanswered, amber while a deadline or a customer is close. */
 function deskLamp(counts: TicketCounts): LampTone {
   if (counts.pastDeadline > 0) return 'red'
@@ -470,7 +471,7 @@ function ResponseCell(props: { ticket: TicketSummary; now: number; isSupport: bo
         data-clock="customerComment"
         fontWeight="semibold"
         fontVariantNumeric="tabular-nums"
-        textAlign={{ base: 'end', md: 'start' }}
+        css={{ textAlign: 'end', [TABLE_TWO_LINES]: { textAlign: 'start' } }}
       >
         <InlineLamp tone="amber" />
         {customerComment}
@@ -482,7 +483,11 @@ function ResponseCell(props: { ticket: TicketSummary; now: number; isSupport: bo
   const pastBreach = clock.kind === 'answeredLate' || clock.kind === 'closedLate'
   const customerClock = props.isSupport ? null : customerClockText(t, props.ticket, props.now)
   return (
-    <HStack gap="8px" align="baseline" justify={{ base: 'flex-end', md: 'flex-start' }}>
+    <HStack
+      gap="8px"
+      align="baseline"
+      css={{ justifyContent: 'flex-end', [TABLE_TWO_LINES]: { justifyContent: 'flex-start' } }}
+    >
       {props.isSupport && clock.kind === 'over' && (
         <Box as="span" flexShrink="0">
           <Box as="span" aria-hidden="true" title={t('tickets.slaBreached')}>
@@ -497,7 +502,7 @@ function ResponseCell(props: { ticket: TicketSummary; now: number; isSupport: bo
           data-soon={soon || undefined}
           {...clockEmphasis(clock)}
           fontVariantNumeric="tabular-nums"
-          textAlign={{ base: 'end', md: 'start' }}
+          css={{ textAlign: 'end', [TABLE_TWO_LINES]: { textAlign: 'start' } }}
         >
           {clock.kind !== 'over' && <InlineLamp tone={clockLamp(clock)} />}
           {pastBreach ? (
@@ -514,12 +519,21 @@ function ResponseCell(props: { ticket: TicketSummary; now: number; isSupport: bo
           <Text
             {...customerClockEmphasis(props.ticket)}
             fontVariantNumeric="tabular-nums"
-            textAlign={{ base: 'end', md: 'start' }}
+            css={{ textAlign: 'end', [TABLE_TWO_LINES]: { textAlign: 'start' } }}
           >
             {customerClock}
           </Text>
         )
       )}
     </HStack>
+  )
+}
+
+/** A lamp set in the clock's first line, so it stays beside the words when they wrap. */
+function InlineLamp(props: { tone: LampTone }) {
+  return (
+    <Box as="span" me="8px">
+      <Lamp tone={props.tone} />
+    </Box>
   )
 }

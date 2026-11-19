@@ -1,0 +1,115 @@
+{
+  "toggle": "Czat",
+  "title": "Czat",
+  "close": "Zamknij czat",
+  "newConversation": "Nowa rozmowa",
+  "noTicketAccess": "Czat nie widzi twoich zgłoszeń.",
+  "empty": {
+    "title": "Zapytaj czat",
+    "hint": "Pytaj zwykłym językiem i dopytuj o jego odpowiedzi. Czat odpowiada z wiedzy ogólnej, nie ze zgłoszeń."
+  },
+  "composer": {
+    "label": "Twoje pytanie",
+    "placeholder": "Zadaj pytanie",
+    "send": "Wyślij",
+    "stop": "Zatrzymaj"
+  },
+  "speaker": {
+    "you": "Ty",
+    "chat": "Czat"
+  },
+  "pending": "Przygotowuję odpowiedź…",
+  "stopped": "Zatrzymano przed końcem odpowiedzi.",
+  "errors": {
+    "rate-limited": "Za dużo pytań naraz. Poczekaj chwilę i spróbuj ponownie.",
+    "unavailable": "Czat jest teraz niedostępny. Spróbuj później.",
+    "timeout": "Odpowiedź trwała zbyt długo.",
+    "personal-data-blocked": "Czat nie wysłał tego pytania: rozmowa zawiera dane osobowe, które nie mogą trafić do modelu, na przykład numer karty. Usuń je z pytania i zapytaj ponownie albo zacznij nową rozmowę, jeśli są we wcześniejszej odpowiedzi.",
+    "failed": "Czat nie potrafił odpowiedzieć na to pytanie.",
+    "request": "Nie udało się wysłać pytania."
+  },
+  "settings": {
+    "link": "Ustawienia",
+    "title": "Ustawienia",
+    "subtitle": "Jakiego modelu używa czat i jak jego ślady trafiają do Phoenix.",
+    "model": {
+      "title": "Model",
+      "sentence": "Każde pytanie z czatu trafia do tego aliasu LiteLLM; plik litellm/config.yaml przypisuje mu model dostawcy.",
+      "chosen": "Pytania z czatu trafiają teraz do {{model}}.",
+      "notLoaded": "Nie udało się wczytać listy modeli."
+    },
+    "traces": {
+      "title": "Ślady aplikacji w Phoenix",
+      "on": "Włączone",
+      "off": "Wyłączone",
+      "onSentence": "Włączone: aplikacja wysyła też własne odcinki śladu, a każde pytanie widać jako jeden ślad z odcinkami aplikacji i wywołaniami modelu przez LiteLLM.",
+      "offSentence": "Wyłączone: ślady wysyła tylko LiteLLM, po jednym na wywołanie modelu, z modelem dostawcy i jego kosztem, ale bez odcinków śladu aplikacji."
+    },
+    "join": {
+      "title": "Grupuj wywołania LiteLLM dla wiadomości czatu",
+      "onSentence": "Włączone: wywołania LiteLLM dla jednej wiadomości czatu trafiają do jednego śladu, także gdy ślady aplikacji są wyłączone. Odcinki śladu aplikacji wtedy nie docierają, więc Phoenix pokazuje każde wywołanie jako osobny wiersz w tym śladzie.",
+      "offSentence": "Wyłączone: gdy ślady aplikacji są wyłączone, każde wywołanie LiteLLM to osobny ślad.",
+      "lockedSentence": "Ślady aplikacji już grupują każde pytanie w jeden ślad, więc to ustawienie działa znowu dopiero, gdy są wyłączone."
+    },
+    "llmSpans": {
+      "title": "Ślady LLM aplikacji w Phoenix",
+      "onSentence": "Włączone: odcinek aplikacji dla wywołania modelu to odcinek LLM z tokenami wywołania, więc ślad pytania liczy tokeny każdego wywołania dwa razy, obok odcinka LiteLLM.",
+      "offSentence": "Wyłączone: odcinek aplikacji dla wywołania modelu to zwykły krok, więc tokeny i koszt każdego wywołania liczy raz odcinek LiteLLM.",
+      "lockedSentence": "Gdy ślady aplikacji są wyłączone, aplikacja nie wysyła odcinków, więc to ustawienie działa tylko, gdy są włączone."
+    },
+    "groups": {
+      "tracing": "Śledzenie w Phoenix"
+    },
+    "flow": {
+      "title": "Dokąd trafiają dane czatu",
+      "meta": "Według zapisu",
+      "boundary": "Działa na tej maszynie",
+      "nodes": {
+        "app": "Aplikacja",
+        "presidio": "Presidio",
+        "litellm": "LiteLLM",
+        "phoenix": "Phoenix",
+        "provider": "Dostawca modelu"
+      },
+      "hop": "{{from}} → {{to}}",
+      "phoenixTerm": "W Phoenix",
+      "forms": {
+        "sent": "Wysłane",
+        "notSent": "Nie wysłane",
+        "asWritten": "W oryginale",
+        "namesAsWritten": "Nazwiska w oryginale"
+      },
+      "hops": {
+        "appToLitellm": {
+          "asWritten": "Pytania tak, jak napisali je użytkownicy, razem z nazwiskami i innymi danymi osobowymi."
+        },
+        "appToPhoenix": {
+          "notSent": "Aplikacja nie wysyła odcinków śladu.",
+          "asWritten": "Odcinki śladu aplikacji razem z danymi osobowymi."
+        },
+        "litellmToPresidio": {
+          "sent": "Każde żądanie, zanim trafi do dostawcy: guardrail LiteLLM."
+        },
+        "litellmToProvider": {
+          "namesAsWritten": "Nazwiska bez zmian. Guardrail maskuje adresy e-mail, numery telefonów, IBAN i PESEL, a numer karty powoduje odrzucenie żądania."
+        },
+        "litellmToPhoenix": {
+          "sent": "Każde wywołanie modelu w takiej postaci, w jakiej dostał je dostawca."
+        }
+      },
+      "shapes": {
+        "perQuestionWithSteps": "Jeden ślad na pytanie: odcinki śladu aplikacji razem z wywołaniami modelu przez LiteLLM.",
+        "perQuestionModelCalls": "Jeden ślad na pytanie, tylko z wywołaniami modelu przez LiteLLM.",
+        "perModelCall": "Jeden ślad na każde wywołanie modelu, tylko z LiteLLM."
+      }
+    },
+    "saving": "Zapisuję…",
+    "saved": "Zapisano",
+    "state": {
+      "on": "włączone",
+      "off": "wyłączone"
+    },
+    "notSaved": "Nie zapisano: „{{title}}” nadal pozostaje {{state}}.",
+    "announcement": "Zapisano: {{title}}. {{sentence}}"
+  }
+}

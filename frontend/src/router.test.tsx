@@ -46,4 +46,13 @@ describe('router', () => {
     expect(await screen.findByRole('heading', { level: 1, name: 'New ticket' })).toBeTruthy()
     expect(calls.some((call) => call.url.startsWith('/api/tickets/'))).toBe(false)
   })
+
+  it('shows a customer not found at /settings and sends no settings request', async () => {
+    const calls = stubFetch([['/api/auth/session', () => jsonResponse(SESSION)]])
+
+    renderAt('/settings')
+
+    expect(await screen.findByText('Page not found')).toBeTruthy()
+    expect(calls.some((call) => call.url.includes('/api/chat/settings'))).toBe(false)
+  })
 })

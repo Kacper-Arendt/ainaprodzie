@@ -5,6 +5,7 @@ import { RouteError } from './components/ui/route-error.tsx'
 import { HomePage } from './features/home/home-page.tsx'
 import { LoginPage } from './features/auth/login-page.tsx'
 import { SessionGate } from './features/auth/session-gate.tsx'
+import { SettingsRoute } from './features/chat/settings-page.tsx'
 import { NewTicketPage } from './features/tickets/new-ticket-page.tsx'
 import { TicketPage } from './features/tickets/ticket-page.tsx'
 
@@ -29,6 +30,10 @@ export const routes: RouteObject[] = [
               { index: true, element: <HomePage /> },
               { path: '/tickets/new', element: <NewTicketPage /> },
               { path: '/tickets/:reference', element: <TicketPage /> },
+              {
+                path: '/settings',
+                element: <SettingsRoute />,
+              },
               { path: '*', element: <RouteError notFound /> },
             ],
           },

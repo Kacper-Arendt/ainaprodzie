@@ -2,7 +2,9 @@ import i18n from 'i18next'
 import type { i18n as I18nInstance } from 'i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 import { initReactI18next } from 'react-i18next'
+import chatEn from './en/chat.json'
 import commonEn from './en/common.json'
+import chatPl from './pl/chat.json'
 import commonPl from './pl/common.json'
 
 // English is the default locale and Polish its translation. Every namespace of
@@ -28,8 +30,8 @@ void i18n
       caches: ['localStorage'],
     },
     resources: {
-      en: { common: commonEn },
-      pl: { common: commonPl },
+      en: { common: commonEn, chat: chatEn },
+      pl: { common: commonPl, chat: chatPl },
     },
     interpolation: { escapeValue: false },
   })

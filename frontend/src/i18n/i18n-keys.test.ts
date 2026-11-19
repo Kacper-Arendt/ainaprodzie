@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import en from './en/common.json'
-import pl from './pl/common.json'
+import chatEn from './en/chat.json'
+import commonEn from './en/common.json'
+import chatPl from './pl/chat.json'
+import commonPl from './pl/common.json'
 
 const flatten = (node: unknown, prefix = ''): Array<[string, unknown]> => {
   if (typeof node !== 'object' || node === null) return [[prefix, node]]
@@ -12,7 +14,12 @@ const flatten = (node: unknown, prefix = ''): Array<[string, unknown]> => {
 // i18next's plural suffixes; each language has its own set (en one/other, pl one/few/many/other).
 const PLURAL = /_(zero|one|two|few|many|other)$/
 
-describe('common translation bundles', () => {
+const BUNDLES = [
+  ['common', commonEn, commonPl],
+  ['chat', chatEn, chatPl],
+] as const
+
+describe.each(BUNDLES)('%s translation bundles', (_namespace, en, pl) => {
   it('have identical key sets in en and pl, a plural family counting as its base key', () => {
     const keys = (bundle: unknown) =>
       [...new Set(flatten(bundle).map(([key]) => key.replace(PLURAL, '')))].sort()

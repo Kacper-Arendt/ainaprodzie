@@ -41,6 +41,19 @@ A complete, deliberately realistic support desk built to have AI retrofitted int
 - **Open:** light theme only today (`colorScheme: 'light'`), but dark mode is not ruled out.
 - **Out of scope:** sprints, epics, email integration, payments, CRM and monitoring integrations, a configurable workflow engine.
 
+### Chat (lesson 0)
+
+Decisions: `docs/adr/chat/`.
+
+- **Who:** both roles. When chat design decisions conflict, support staff's work wins.
+- **What:** a general assistant of the help desk. It greets, answers small talk briefly and explains how the help desk works: customers raise tickets, support staff answer them, and a ticket moves through its statuses. It knows who is signed in, the current time and the language of the interface, and nothing else from the app: it cannot read or change tickets. Asked about a particular ticket, it says it cannot see tickets yet and points to the ticket list. Reading tickets arrives in lesson 1, operations in lesson 2.
+- **Where:** a non-modal panel docked on the right of the signed-in shell, opened from the header, kept open across navigation. On a narrow screen the panel takes the full width and closes to show the page behind it.
+- **Streaming:** the answer streams in as the model writes it.
+- **Memory:** a conversation remembers its last 20 messages for follow-ups. "New conversation" and a page reload start fresh; there is no history to return to.
+- **Language:** it answers in the language of the question, otherwise in the language of the interface.
+- **Optional:** the app builds and runs without the chat; a model that does not answer must leave the ticket desk usable.
+- **Privacy:** the chat masks no personal data. What a user types reaches the model provider as written, and LiteLLM's traces and logs carry the prompts and answers as the provider receives them. The app's own traces leave only while support staff allow them on the Settings page.
+
 ## Brand Commitments
 
 - The product name in the UI is **Retrofit**. The fictional project-management SaaS that customers use stays unnamed or generic; do not invent a brand for it.

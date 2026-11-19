@@ -31,6 +31,7 @@ export function PanelHead(props: { title: string; action?: ReactNode; id?: strin
         fontWeight="normal"
         textTransform="uppercase"
         letterSpacing="0.01em"
+        textWrap="balance"
       >
         {props.title}
       </Heading>

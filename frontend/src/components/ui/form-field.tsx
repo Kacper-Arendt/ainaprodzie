@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react'
+import type { ReactElement, Ref } from 'react'
 import { Box, Flex, Input, NativeSelect, Text, Textarea } from '@chakra-ui/react'
 import type { InputProps, NativeSelectFieldProps, TextareaProps } from '@chakra-ui/react'
 import { CONTROL_STYLE } from './control-style.ts'
@@ -37,7 +37,7 @@ export function FieldSelect(props: NativeSelectFieldProps) {
  * invalid state, with the vertical padding a free-height control needs. It only
  * grows downwards, so a resize never widens the form column.
  */
-export function FieldTextarea(props: TextareaProps) {
+export function FieldTextarea(props: TextareaProps & { ref?: Ref<HTMLTextAreaElement> }) {
   return (
     <Textarea
       {...CONTROL_STYLE}

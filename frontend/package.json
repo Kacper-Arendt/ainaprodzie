@@ -28,12 +28,15 @@
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-i18next": "^17.0.11",
-    "react-router": "^8.3.0"
+    "react-markdown": "^10.1.0",
+    "react-router": "^8.3.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@chakra-ui/cli": "^3.36.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.4",
+    "@types/hast": "^3.0.5",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",

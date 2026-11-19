@@ -18,12 +18,53 @@ spring:
     jdbc:
       # Session tables are owned by Liquibase (db-202610071200-spring-session.yaml).
       initialize-schema: never
+  ai:
+    # The chat uses only a chat model; the OpenAI starter would otherwise create its embedding, image, audio and
+    # moderation models too.
+    model:
+      embedding: none
+      image: none
+      audio:
+        speech: none
+        transcription: none
+      moderation: none
+    # The OpenAI client talks to the LiteLLM proxy, which maps the alias to a provider model (chat ADR 0002). No
+    # defaults for the URL and the key, like the datasource.
+    openai:
+      base-url: ${LITELLM_URL}
+      api-key: ${LITELLM_KEY}
+      # The SDK retries once, and LiteLLM retries each provider call once more: the two layers multiply.
+      max-retries: 1
+      # Longer than LiteLLM's 15s provider call and its one retry (litellm/config.yaml), so the gateway gives up first
+      # and its retry fits into one call of the app. It bounds the SDK's own retry too: after LiteLLM's timeout at about
+      # 31s the retry has the few seconds left. A local model that reasons before it answers may need longer.
+      timeout: ${CHAT_MODEL_TIMEOUT:35s}
+    # Spring AI can log every prompt and answer. They stay off: no log line holds a question or an answer (chat ADR
+    # 0007).
+    chat:
+      observations:
+        log-prompt: false
+        log-completion: false
+      client:
+        observations:
+          log-prompt: false
+          log-completion: false
 
 retrofit:
   # Version of this server build. spring-boot-starter-parent filters
   # application*.yml with @..@ delimiters, so this must stay quoted: an
   # unquoted @ is not a valid YAML plain scalar.
   api-version: "@project.version@"
+  chat:
+    # The LiteLLM aliases support staff choose the chat's model from on the settings page; each must be in
+    # litellm/config.yaml. Until someone chooses, the chat uses chat-gemini, the default of the stored setting.
+    models: chat-gemini,chat-anthropic,chat-chaos
+    # One deadline for a whole question, over every model call it makes; one call, with the SDK's retry, ends within
+    # the client's timeout.
+    turn-timeout: ${CHAT_TURN_TIMEOUT:70s}
+    # A conversation nobody asks in for this long is forgotten, so what was said in it does not stay in the process
+    # until a restart (chat ADR 0005). Longer than turn-timeout, so a turn still streaming is never forgotten as idle.
+    conversation-idle-timeout: ${CHAT_CONVERSATION_IDLE_TIMEOUT:30m}
 
 server:
   shutdown: graceful
@@ -37,12 +78,45 @@ management:
       # platform, not only when Kubernetes is detected.
       probes:
         enabled: true
+  # Every question of the chat is traced and exported over OTLP (chat ADR 0007). No default for the endpoint, like the
+  # datasource.
+  tracing:
+    sampling:
+      probability: 1.0
+  opentelemetry:
+    resource-attributes:
+      # The Phoenix project LiteLLM's spans go to as well, so a question's trace and its model calls share one project.
+      "[openinference.project.name]": retrofit
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTLP_TRACES_URL}
+  observations:
+    enable:
+      # Their spans would bury the chat's in every trace.
+      spring.security: false
+      tasks.scheduled: false
+      # The model client's HTTP calls run on OkHttp's own threads, outside the question's trace, so each would be a
+      # trace of its own; the model call span already covers them.
+      okhttp.requests: false
+  otlp:
+    metrics:
+      export:
+        # The OpenTelemetry starter also pushes metrics over OTLP; only traces have a backend.
+        enabled: false
 
 springdoc:
   api-docs:
     # The API docs endpoint is a dev/test tool, not a production surface.
     # OpenApiExportTests (test profile) generates the committed contract from it.
     enabled: false
+
+logging:
+  level:
+    # It logs a failed model call with its message, which can quote the user's words in LiteLLM's echo of the request.
+    # The chat logs the same failures itself without any message (RedactedFailure), so no log line holds a question
+    # or an answer (chat ADR 0007).
+    org.springframework.ai.chat.model.MessageAggregator: "off"
 
 ---
 spring:
@@ -57,10 +131,30 @@ spring:
     password: ${DB_PASSWORD:retrofit}
   liquibase:
     contexts: schema,dev
+  ai:
+    openai:
+      # LiteLLM from compose.yaml; the key is the app's virtual key, which litellm/app_key.py creates there, not a
+      # provider key and not LiteLLM's master key.
+      base-url: ${LITELLM_URL:http://localhost:4000}
+      api-key: ${LITELLM_KEY:sk-retrofit-app-key}
+
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          # Phoenix from compose.yaml; its UI is http://localhost:6006.
+          endpoint: ${OTLP_TRACES_URL:http://localhost:6006/v1/traces}
 
 springdoc:
   api-docs:
     enabled: true
+
+logging:
+  level:
+    # On macOS, Tomcat logs "Error setting socket options" at ERROR when a client closes a connection before it is
+    # accepted (the dev proxy, a browser preconnect, a port probe). The connection was already gone; the line is noise.
+    org.apache.tomcat.util.net.NioEndpoint: "off"
 
 ---
 spring:
@@ -72,6 +166,26 @@ spring:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/retrofit}
     username: ${DB_USERNAME:retrofit}
     password: ${DB_PASSWORD:retrofit}
+  ai:
+    model:
+      # No model and no key in the regular tests: the chat's test configuration provides a scripted ChatModel.
+      chat: none
+
+retrofit:
+  chat:
+    # Short, so the suite that waits for it stays fast; a scripted turn takes milliseconds.
+    turn-timeout: 3s
+
+management:
+  tracing:
+    # Nothing leaves the regular tests: the chat's test configuration collects the spans in memory instead.
+    export:
+      enabled: false
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTLP_TRACES_URL:http://localhost:6006/v1/traces}
 
 springdoc:
   api-docs:

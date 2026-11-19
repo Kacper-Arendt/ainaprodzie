@@ -13,6 +13,9 @@ const DESK_COUNTS = [
   { key: 'unassigned', attention: 'UNASSIGNED', lamp: 'off' },
 ] as const satisfies { key: keyof TicketCounts; attention: Attention; lamp: LampTone }[]
 
+/** Where the four cells share one row: the strip's own width, which the docked chat narrows. */
+const ONE_ROW = '@container desk-summary (min-width: 700px)'
+
 /**
  * A strip of four counts above support staff's queue, before its search and
  * filters, saying what on the whole desk needs a person now, whatever the list
@@ -22,8 +25,8 @@ const DESK_COUNTS = [
  * marked as the page and drawn in ink). The first count is the live breaches
  * only, worded so it reads apart from the SLA filter's Breached, which also
  * holds the breaches already answered or closed. The strip keeps its
- * height while the counts load, so nothing under it moves. On a phone the
- * four cells fold two by two.
+ * height while the counts load, so nothing under it moves. Narrower than
+ * 700px (a phone, or the page beside the chat) the four cells fold two by two.
  */
 export function DeskSummary(props: {
   counts: TicketCounts | undefined
@@ -42,22 +45,27 @@ export function DeskSummary(props: {
       borderRadius="panel"
       overflow="hidden"
       mb="20px"
+      containerType="inline-size"
+      containerName="desk-summary"
     >
       <VisuallyHidden id={labelId}>{t('tickets.desk.label')}</VisuallyHidden>
       <Grid
         as="ul"
         aria-labelledby={labelId}
-        templateColumns={{ base: 'repeat(2, minmax(0, 1fr))', md: 'repeat(4, minmax(0, 1fr))' }}
         listStyleType="none"
         m="0"
         p="0"
         // Hairlines between the cells: each cell draws its leading and top edge.
         css={{
+          gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
           '& > li': { borderColor: 'border' },
           '& > li + li': { borderInlineStartWidth: '1.5px' },
-          '@media (max-width: 47.99em)': {
-            '& > li:nth-of-type(3)': { borderInlineStartWidth: '0' },
-            '& > li:nth-of-type(n + 3)': { borderTopWidth: '1.5px' },
+          '& > li:nth-of-type(3)': { borderInlineStartWidth: '0' },
+          '& > li:nth-of-type(n + 3)': { borderTopWidth: '1.5px' },
+          [ONE_ROW]: {
+            gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+            '& > li:nth-of-type(3)': { borderInlineStartWidth: '1.5px' },
+            '& > li:nth-of-type(n + 3)': { borderTopWidth: '0' },
           },
         }}
       >
