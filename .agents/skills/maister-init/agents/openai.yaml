@@ -1,0 +1,4 @@
+interface:
+  display_name: "Maister Init"
+  short_description: "Initialize project standards and workflow guidance."
+  default_prompt: "Use $maister-init to set up Maister for this repository."
